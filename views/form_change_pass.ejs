@@ -1,0 +1,18 @@
+<html>
+
+<body>
+    
+    <div>
+        <h1>Change password</h1>
+        <form method="post" action="<%= url %>">
+            <br>
+                User: <input type="text" name="email" /></br>
+                Current Password: <input type="password" name="actual" maxlength="<%= passMinLen %>"/></br>
+                New Password: <input type="password" name="new" maxlength="<%= passMinLen %>" /></br>
+            </p>
+            <input type="submit" label="Verify">
+        </form>
+    </div>
+</body>
+
+</html>

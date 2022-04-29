@@ -1,0 +1,9 @@
+node_modules
+
+# Credentials realted data
+.env
+/certificates
+
+# VSCode related directories
+.vscode
+.history

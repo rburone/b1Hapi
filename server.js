@@ -1,0 +1,166 @@
+'use strict'
+
+const Glue   = require('@hapi/glue')    // Server composer
+const ejs    = require('ejs')           // View engine
+const vision = require('@hapi/vision')  // View hadler
+const inert  = require('@hapi/inert');  // Statics routes handler
+const Joi    = require('@hapi/joi')
+
+module.exports = {
+    async init (config) {
+        const {string, number, boolean, array} = Joi.types();
+        const ConfigServerSchema = Joi.object({
+            port      : number.port().required(),
+            host      : string.required(),
+            publicPath: string.allow('').required(),
+            rootPath  : string.allow('').required(),
+            userPath  : string.allow('').required(),
+            toolsPath : string.allow('').required(),
+            viewsPath : string.pattern(/^[^\/].*[^\/]$/, "Don't start with /").required(),
+            useTls    : boolean.required(),
+            sendMails : boolean.required(),
+            verbose   : boolean,
+        })
+        Joi.assert(config.server, ConfigServerSchema)
+
+        const manifest = {
+            server: {
+                port  : config.server.port || 80,
+                host  : config.server.host || 'localhost',
+                debug : (config.env == 'development') ? {request: ['handler']}: {},
+                tls   : config.tls,
+                routes: {
+                    cors : true,
+                    files: {
+                        relativeTo: config.server.publicPath
+                    }
+                },
+
+            },
+            register: {
+                plugins: [
+                    {// 🚨 REQUIRED FOR ORTHER PLUGINS must to be first
+                        plugin: require('./plugins/b1ErrMng'),
+                        options: {
+                            doLog: true
+                        }
+                    },
+                    {// 🚨 REQUIRED FOR ORTHER PLUGINS must to be second
+                        plugin: require('./plugins/b1routerRegister'),
+                        options: {
+                            rootPath: config.server.rootPath,
+                        },
+                    },
+                    {
+                        plugin: require('./plugins/auth'),
+                        options: {
+                            modelToken: config.security.modelToken,
+                            modelUser : config.security.modelUser,
+                        }
+                    },
+                    {
+                        plugin: require('hapi-mongodb'),
+                        options: {
+                            url: config.dataBase.url,
+                            settings: {
+                                auth: {
+                                    username  : config.env.DB_USER,
+                                    password  : config.env.DB_PASS,
+                                    authSource: config.env.AUTH_SRC,
+                                },
+                                useUnifiedTopology: true,
+                            },
+                            decorate: true
+                        }
+                    },
+                    {
+                        plugin: require('./plugins/b1MongoRest'),
+                        options: {
+                            api    : require(config.dataBase.defFile),
+                            path   : config.dataBase.path,
+                            verbose: config.server.verbose,
+                        }
+                    },
+                    {
+                        plugin: require('./plugins/userManagment'),
+                        options: {
+                            modelUser              : config.security.modelUser,
+                            modelToken             : config.security.modelToken,
+                            path                   : config.server.userPath,
+                            passMinLen             : config.security.passMinLen,
+                            verifyEmail            : config.security.verifyEmail,
+                            ttl                    : config.security.ttl,
+                            lenVerifCode           : config.security.lenVerifCode,
+                            roles                  : config.acl.roles,
+                            userAdmin              : config.acl.userAdmin,
+                            fromEmail              : config.mail.fromEmail,
+                            secureChange           : config.security.secureChange,
+                            oneTimeCode            : config.security.oneTimeCode,
+                            sendMails              : config.server.sendMails,
+                            emailVerificationCode  : config.views.emailVerificationCode,
+                            formChkVerificationCode: config.views.formChkVerificationCode,
+                            formChangePass         : config.views.formChangePass,
+                        }
+                    },
+                    
+                    {
+                        plugin: require('@antoniogiordano/hacli'),
+                        options: {}
+                    },
+                    {
+                        plugin: require('./plugins/b1csvfy')
+                    },
+                    {
+                        plugin: require('./plugins/toolsRoutes'),
+                        options: {
+                            path: config.server.toolsPath,
+                        },
+                    },
+                ],
+            }
+        }
+
+        if (config.server.sendMails) {
+            manifest.register.plugins.push(
+                {
+                    plugin: require('./plugins/b1nodemailer'),
+                    options: {
+                        host: config.mail.host,
+                        port: config.mail.port,
+                        auth: {
+                            user: config.mail.user,
+                            pass: config.mail.pass
+                        }
+                    }
+                },
+            )
+        }
+
+        const server = await Glue.compose(manifest/*, options*/);
+
+        await server.register(vision)
+        server.views({
+            engines: {ejs},
+            relativeTo: __dirname,
+            path: config.server.viewsPath
+        })
+
+        if (config.server?.publicPath.lenght > 0) {
+            await server.register(inert)
+            await server.route(require('./router/static-routes.js'))
+        }
+        
+        // █▄ ▄█ ██▀ ▀█▀ █▄█ ▄▀▄ █▀▄ ▄▀▀
+        // █ ▀ █ █▄▄  █  █ █ ▀▄▀ █▄▀ ▄█▀
+        server.method('getConf', (seccion = false) => {
+            if (seccion) {
+                return config[seccion]
+            }
+            return config
+        })
+
+        await server.start()
+        
+        return server
+    }
+}

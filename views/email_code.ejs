@@ -1,0 +1,74 @@
+<html>
+
+<head>
+    <style>
+        .card {
+            box-shadow: 0 2.5rem 2rem -2rem hsl(200 50% 20% / 40%);
+            background: hsl(0 0% 100%);
+            color: hsl(200 50% 20%);
+            line-height: 1.5;
+            font-size: 1.5rem;
+            font-weight: 300;
+            width: 35vmin;
+            height: 25vmin;
+            display: flex;
+            place-items: center;
+            text-align: center;
+            padding: 3ch;
+            border-radius: 2ch;
+            border: 1px solid hsl(0 0% 83%);
+            flex-direction: column;
+        }
+
+        .card :first-child {
+            margin-top: auto;
+        }
+
+        .card :last-child {
+            margin-bottom: auto;
+        }
+
+        .link {
+            margin-top: 25px;
+            font-size: 14px;
+            text-decoration: none;
+            background-color: aliceblue;
+	        border-radius: 30px;
+            width: 200px;
+            padding: 5px;
+        }
+
+        html {
+            block-size: 100%;
+            inline-size: 100%;
+            background: hsl(0 0% 85%);
+        }
+
+        body {
+            min-block-size: 100%;
+            min-inline-size: 100%;
+            margin: 0;
+            box-sizing: border-box;
+            display: grid;
+            grid-auto-flow: column;
+            gap: 5vmin;
+            place-content: center;
+            font-family: system-ui;
+        }
+
+        .box {
+	        background-color: rgb(142, 152, 161);
+            color: white;
+	        border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <div>Validation code:</div>
+        <div class="box"><%= code %></div>
+        <a class="link" href="<%=url>">Validate</a>
+    </div>
+</body>
+</html>

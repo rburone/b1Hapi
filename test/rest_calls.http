@@ -1,0 +1,34 @@
+POST http://localhost:3500/login HTTP/1.1
+content-type: application/json
+
+{
+    "email": "user1@domain.com",
+    "password": "abcd1234"
+}
+###
+http://localhost:3500/chkCode/user1@domain.com/808840
+###
+http://localhost:3500/validationForm
+###
+GET http://localhost:3500/changePassForm
+###
+http://localhost:3500/sendCode/user1@domain.com
+###
+PATCH http://localhost:3500/changePassword HTTP/1.1
+content-type: application/json
+
+{
+    "email": "user1@domain.com",
+    "actual": "abcd1234",
+    "new": "87654321"
+}
+###
+http://localhost:3500/api/config
+###
+PATCH http://localhost:3500/roles
+content-type: application/json
+
+{
+    "email": "user1@domain.com",
+    "roles": ["ADMIN"]
+}
