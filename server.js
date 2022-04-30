@@ -6,6 +6,7 @@ const vision = require('@hapi/vision')  // View hadler
 const inert  = require('@hapi/inert');  // Statics routes handler
 const Joi    = require('@hapi/joi')
 
+const apiPattern = /^[^\/].*[^\/]$/
 module.exports = {
     async init (config) {
         const {string, number, boolean, array} = Joi.types();
@@ -13,13 +14,14 @@ module.exports = {
             port      : number.port().required(),
             host      : string.required(),
             publicPath: string.allow('').required(),
-            rootPath  : string.allow('').required(),
-            userPath  : string.allow('').required(),
-            toolsPath : string.allow('').required(),
-            viewsPath : string.pattern(/^[^\/].*[^\/]$/, "Don't start with /").required(),
+            rootAPI   : string.allow('').pattern(apiPattern, "Don't start with /").required(),
+            userAPI   : string.allow('').pattern(apiPattern, "Don't start with /").required(),
+            toolsAPI  : string.allow('').pattern(apiPattern, "Don't start with /").required(),
+            viewsPath : string.pattern(apiPattern, "Don't start with /").required(),
             useTls    : boolean.required(),
             sendMails : boolean.required(),
             verbose   : boolean,
+            customData: string.required()
         })
         Joi.assert(config.server, ConfigServerSchema)
 
@@ -48,7 +50,7 @@ module.exports = {
                     {// 🚨 REQUIRED FOR ORTHER PLUGINS must to be second
                         plugin: require('./plugins/b1routerRegister'),
                         options: {
-                            rootPath: config.server.rootPath,
+                            rootAPI: config.server.rootAPI,
                         },
                     },
                     {
@@ -86,7 +88,7 @@ module.exports = {
                         options: {
                             modelUser              : config.security.modelUser,
                             modelToken             : config.security.modelToken,
-                            path                   : config.server.userPath,
+                            path                   : config.server.userAPI,
                             passMinLen             : config.security.passMinLen,
                             verifyEmail            : config.security.verifyEmail,
                             ttl                    : config.security.ttl,
@@ -113,7 +115,7 @@ module.exports = {
                     {
                         plugin: require('./plugins/toolsRoutes'),
                         options: {
-                            path: config.server.toolsPath,
+                            path: config.server.toolsAPI,
                         },
                     },
                 ],

@@ -2,14 +2,15 @@ module.exports = {
     server: {
         port      : 3500,                    // [R] Server port
         host      : 'localhost',             // [R] Server URL
-        publicPath: `${__dirname}/public`,   // [R] Public path or empty to disable
-        rootPath  : '',                      // [R] Path for all routes created
-        userPath  : '',                      // [R] REST api path for user managment
-        toolsPath : '/api',                  // [R] Path for access special routes
-        viewsPath : 'views',                 // [R] Path of templates to render views
-        useTls    : true,                    // [R] Use certificates? (https)
-        verbose   : true,                    // [R] Print some messages on console?
-        sendMails : true,                    // [R] Send emails notificacions?
+        publicPath: `${__dirname}/public`,   // [R] System path for static files or empty to disable
+        rootAPI   : '',                      // [R] REST api path for all routes created
+        userAPI   : '',                      // [R] REST api path for user managment
+        toolsAPI  : 'api',                   // [R] REST api path for access special routes
+        viewsPath : 'views',                 // [R] System path (realtive) of templates to render views
+        useTls    : false,                    // [R] will it use certificates? (https)
+        verbose   : true,                    // [R] Will it print some messages on console?
+        sendMails : true,                    // [R] Will it send emails notificacions?
+        customData: `${__dirname}/customdata`// [R] System path for custom and plugins data
     },
     certificate: {
         key : '/certificates/localhost-key.pem', // [R] Path to file with key if useTls is true

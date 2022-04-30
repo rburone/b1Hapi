@@ -8,7 +8,7 @@ module.exports = {
         const routes = require('./routes.js')
 
         // routes.forEach(route => route.path = `${options.path}${route.path}`) // 👨‍💻 Put the apipath prefix to all routes
-        routes.forEach(route => route.path = `${options.path}${route.path}`) // 👨‍💻 Put the apipath prefix to all routes
+        routes.forEach(route => route.path = `/${options.path}${route.path}`) // 👨‍💻 Put the apipath prefix to all routes
         server.createRoute(routes)
     }
 }

@@ -32,7 +32,7 @@ const RouteSchema = Joi.object({
 })
 
 const OptionsSchema = Joi.object({
-    rootPath: string.allow('').pattern(/^\/(?!\/).*[^\/]$/, 'REST API path').required(),
+    rootAPI: string.allow('').pattern(/^\/(?!\/).*[^\/]$/, 'REST API path').required(),
 })
 
 module.exports = {
@@ -44,7 +44,7 @@ module.exports = {
         server.decorate('server', 'createRoute', (newRoute) => {
             if (!Array.isArray(newRoute)) { newRoute = [newRoute]}
             newRoute.forEach(route => {
-                route.path = `${options.rootPath}${route.path}`
+                route.path = `${options.rootAPI}${route.path}`
                 const {error, value} = RouteSchema.validate(route)
                 if (!error) {
                     createdRoutes.push(`[${value.method}] ${value.path}`)
@@ -57,7 +57,7 @@ module.exports = {
 
         server.route({
             method: 'GET',
-            path: `${options.rootPath}/routes`,
+            path: `${options.rootAPI}/routes`,
             options: {
                 auth: false
             },

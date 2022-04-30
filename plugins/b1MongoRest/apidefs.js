@@ -1,4 +1,4 @@
-const model = require('../../models')
+const model = require('../../customdata/models')
 
 const API = {
     routes: [
