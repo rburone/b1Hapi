@@ -1,5 +1,5 @@
-# b1Hapi ![Version](https://img.shields.io/badge/version-1.0.0-green)
-## Simple hapi framework implementation by Ricardo D. Burone (bur1)
+# b1Hapi ![Version](https://img.shields.io/github/package-json/v/rburone/b1Hapi?color=green)
+## Simple hapi framework implementation by Ricardo D. Burone (Bur1)
 ### Features:
 - Access with token autentification
 - User managment
@@ -31,9 +31,4 @@ AUTH_SRC = admin
 MAIL_USER = nouser
 MAIL_PASS = nopass
 
-# Mercado Pago credentials
-MP_PROD_ACCESSTOKEN = ...
-MP_PROD_PUBLICKEY   = ...
-MP_TEST_ACCESSTOKEN = ...
-MP_TEST_PUBLICKEY   = ...
 ```
