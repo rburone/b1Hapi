@@ -1,7 +1,11 @@
 {
   "name": "b1hapi",
   "version": "1.0.0",
-  "description": "Simple Hpai framework implementation",
+  "description": "Simple Hapi framework implementation",
+  "repository": {
+    "type": "git",
+    "url": "gti://github.com/rburone/b1Hapi.git"
+  },
   "main": "index.js",
   "scripts": {
     "test": "lab",
@@ -18,6 +22,7 @@
     "@hapi/joi": "^17.1.1",
     "@hapi/vision": "^6.1.0",
     "bcryptjs": "^2.4.3",
+    "disinfect": "^1.1.0",
     "dotenv": "^16.0.0",
     "ejs": "^3.1.7",
     "hapi-auth-bearer-token": "^8.0.0",

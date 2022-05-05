@@ -104,10 +104,17 @@ module.exports = {
                             formChangePass         : config.views.formChangePass,
                         }
                     },
-                    
                     {
                         plugin: require('@antoniogiordano/hacli'),
                         options: {}
+                    },
+                    {
+                        plugin: require('disinfect'),
+                        options: {
+                            disinfectQuery  : true,
+                            disinfectParams : true,
+                            disinfectPayload: true
+                        }
                     },
                     {
                         plugin: require('./plugins/b1csvfy')
