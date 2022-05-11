@@ -1,6 +1,6 @@
 module.exports = {
     server: {
-        port      : 3500,                    // [R] Server port
+        port      : 80,                      // [R] Server port
         host      : 'localhost',             // [R] Server URL
         publicPath: `${__dirname}/public`,   // [R] System path for static files or empty to disable
         rootAPI   : '',                      // [R] REST api path for all routes created

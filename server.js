@@ -9,9 +9,9 @@ const Joi    = require('@hapi/joi')
 const apiPattern = /^[^\/].*[^\/]$/
 module.exports = {
     async init (config) {
-        const {string, number, boolean, array} = Joi.types();
+        const {string, number, boolean} = Joi.types();
         const ConfigServerSchema = Joi.object({
-            port      : number.port().required(),
+            port      : number.port().allow('').required(),
             host      : string.required(),
             publicPath: string.allow('').required(),
             rootAPI   : string.allow('').pattern(apiPattern, "Don't start with /").required(),
@@ -27,9 +27,8 @@ module.exports = {
 
         const manifest = {
             server: {
-                port  : config.server.port || 80,
-                host  : config.server.host || 'localhost',
-                debug : (config.env == 'development') ? {request: ['handler']}: {},
+                port  : config.server.port,
+                debug : (config.NODE_ENV == 'development') ? {request: ['handler']}: {},
                 tls   : config.tls,
                 routes: {
                     cors : true,
@@ -37,7 +36,6 @@ module.exports = {
                         relativeTo: config.server.publicPath
                     }
                 },
-
             },
             register: {
                 plugins: [
@@ -66,9 +64,9 @@ module.exports = {
                             url: config.dataBase.url,
                             settings: {
                                 auth: {
-                                    username  : config.env.DB_USER,
-                                    password  : config.env.DB_PASS,
-                                    authSource: config.env.AUTH_SRC,
+                                    username  : process.env.DB_USER,
+                                    password  : process.env.DB_PASS,
+                                    authSource: process.env.AUTH_SRC,
                                 },
                                 useUnifiedTopology: true,
                             },
@@ -154,7 +152,7 @@ module.exports = {
             path: config.server.viewsPath
         })
 
-        if (config.server?.publicPath.lenght > 0) {
+        if (config.server?.publicPath.length > 0) {
             await server.register(inert)
             await server.route(require('./router/static-routes.js'))
         }
