@@ -19,6 +19,7 @@ const RouteSchema = Joi.object({
     method: string.uppercase().valid(...validMethods).required(),
     path: string.pattern(/^\/(?!\/).*[^\/]$/, 'REST API path'),
     options: Joi.object({
+        payload: Joi.object(),
         auth: boolean,
         plugins: Joi.object({
             hacli: Joi.object({

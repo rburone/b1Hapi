@@ -84,4 +84,21 @@ module.exports = [
             }
         }
     },
+    {
+        method: 'POST',
+        path: '/submit',
+        options: {
+            auth: false,
+            payload: {
+                // maxBytes: 209715200,
+                parse: true,
+                allow: "multipart/form-data",
+                multipart: {output: "file"},
+            },
+        },
+        handler: async (req, h) => {
+            console.log(req.payload);
+            return h.response(req.payload);
+        }
+    },
 ]
