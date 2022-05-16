@@ -8,7 +8,7 @@ const config       = configLoader.read()            // Read configuration file c
 
 server.init(config).then(server => {
     console.log(`\n\nb1Hapi ${C.Bright}v.%s${C.Reset} running on ${C.Bright}%s${C.Reset}`, config.version, server.info.uri)
-    console.log(`Started from: ${C.Bright}%s${C.Reset}`, __dirname)
+    console.log(`Started from: ${C.Bright}%s${C.Reset}`, config.sysRoot)
     console.log(`Node_env: ${C.Bright}%s${C.Reset}`, config.NODE_ENV)
     console.log(`Config: ${C.Bright}%s${C.Reset}`, config.file)
     console.log(`DB: ${C.Bright}%s${C.Reset}`, config.dataBase.url)

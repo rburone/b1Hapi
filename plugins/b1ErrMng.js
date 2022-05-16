@@ -68,6 +68,9 @@ function stdManager(errorObj) {
         case 'Not sent':
             say('warning', 'Email', 'Not sent', errorObj.from)
             return 'Not sent'
+        case 'ENOENT':
+            say('error', 'Internal', 'File not found', errorObj.from)
+            return Boom.internal()
         default:
             break;
     }

@@ -1,75 +1,37 @@
 'use strict'
 /******************************************************
-* b1nodemailer.js
-* Create a server method to send emails using nodemailer
+* b1FileStorage.js
+* Creates a server method to upload and store files
 * Autor: Ricardo D. Burone <rdburone@gmail.com>
-*
-* server.sendEmail({
-*    from,
-*    to,
-*    subject,
-*    text,
-*    html
-* })
 */
-const nodemailer = require('nodemailer');
-const Joi        = require('joi');
+const Joi  = require('joi');
+const fs   = require('fs')
+const path = require('path')
+const Hoek = require('@hapi/hoek');
+const {exit} = require('process');
 
-const {string, number} = Joi.types();
+const {string} = Joi.types();
 const OptionsSchema = Joi.object({
-    host: string.required(),
-    port: number.required(),
-    auth: Joi.object({
-        user: string
-            .alphanum()
-            .min(3)
-            .max(30)
-            .required(),
-        pass: string.required()
-    })
-})
-
-const EmailSchema = Joi.object({
-    from   : string.email().required(),
-    to     : string.email().required(),
-    subject: string.required(),
-    text   : string,
-    html   : string
+    path   : string.pattern(/^\/(?!\/).*[^\/]$/, 'REST API path'),
+    storage: string,
+    sysRoot: string,
 })
 
 module.exports = {
-    name: 'b1nodemailer',
+    name: 'b1FileStorage',
     async register(server, options) {
-        server.assert(Joi.assert, options, OptionsSchema, '[plugin:b1nodemailer:options]')
-        
-        const transporter = nodemailer.createTransport(options);
-        transporter.OK = true
-        transporter.verify(error => {
-            if (error) {
-                console.log('SMTP: \x1b[43m\x1b[31m ECONNREFUSED \x1b[0m\n');
-            }
-            transporter.OK = false
-        });
+        server.assert(Joi.assert, options, OptionsSchema, '[plugin:b1FileStorage:options]')
 
-        server.method({
-            name: 'sendEmail',
-            method: async function(emailOptions) {
-                if (transporter.OK) {
-                    const {error, value} = EmailSchema.validate(emailOptions)
-                    if (!error) {
-                        const info = await transporter.sendMail(emailOptions)
-                        if (info.accepted.length > 0) {
-                            return 'ok'
-                        } else {
-                            return server.errManager({error: 'Not sent', from: '[plugin:b1nodemailer:sendMail]'})
-                        }
-                    } else {
-                        return server.errManager({error, from: '[plugin:b1nodemailer:validation]'})
-                    }
-                } else {
-                    return server.errManager({error: 'Unavailable', from: '[plugin:b1nodemailer:unavailable]'})
-                }
-            }
-        });
+        const sysStorePath = path.normalize(`${options.sysRoot}/${options.storage}`)
+        try {
+            fs.accessSync(sysStorePath, fs.constants.R_OK | fs.constants.W_OK);
+        } catch (error) {
+            server.errManager({error, from: '[plugin:b1FileStorage:access]'})
+            process.exit(1)
+        }
+
+        const routes = require('./routes.js')
+        routes.forEach(route => route.path = `${options.path}${route.path}`) // 👨‍💻 Put the apipath prefix to all routes
+        server.createRoute(routes, {sysStorePath, errManager: server.errManager})
     }
 }

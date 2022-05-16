@@ -40,9 +40,9 @@ module.exports = {
     name:'routerRegister',
     register(server, options) {
         server.assert(Joi.assert, options, OptionsSchema, '[plugin:routerRegister:options]')
-
         const createdRoutes = []
-        server.decorate('server', 'createRoute', (newRoute) => {
+        server.decorate('server', 'createRoute', (newRoute, bind = false) => {
+            if (bind) server.bind(bind)
             if (!Array.isArray(newRoute)) { newRoute = [newRoute]}
             newRoute.forEach(route => {
                 route.path = `${options.rootAPI}${route.path}`

@@ -2,6 +2,11 @@
 const Boom       = require('@hapi/boom')
 const {generate} = require('../../lib/methods').b1Lib
 
+// const handler = function(r,h) {
+//     console.log(this.marco, h.context.marco)
+//     return this.marco
+// }
+
 module.exports = [
     {
         method: 'GET',
@@ -9,7 +14,7 @@ module.exports = [
         options: {
             auth: false
         },
-        handler: () => {
+        handler: function() {
             return 'Bur1 Hapi\'s Server';
         }
     },
@@ -82,23 +87,6 @@ module.exports = [
                     throw Boom.internal('Internal MongoDB error', error)
                 }
             }
-        }
-    },
-    {
-        method: 'POST',
-        path: '/submit',
-        options: {
-            auth: false,
-            payload: {
-                // maxBytes: 209715200,
-                parse: true,
-                allow: "multipart/form-data",
-                multipart: {output: "file"},
-            },
-        },
-        handler: async (req, h) => {
-            console.log(req.payload);
-            return h.response(req.payload);
         }
     },
 ]
