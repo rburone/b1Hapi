@@ -126,9 +126,10 @@ module.exports = {
                     {
                         plugin: require('./plugins/b1FileStorage'),
                         options: {
-                            path   : '/store',
-                            storage: '../storage',
-                            sysRoot: config.sysRoot,
+                            path      : '/store',
+                            storage   : '../storage',
+                            sysRoot   : config.sysRoot,
+                            autoCreate: false,
                         },
                     },
                 ],
