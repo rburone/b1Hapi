@@ -141,7 +141,7 @@ module.exports = {
                         server.createRoute(route)
                     } else {
                         const error = new Error(`No exists \x1b[1m${value.name}\x1b[0m named route`)
-                        error.name = 'Definition'
+                        error.code = 'NOCRITICAL'
                         server.errManager({error, from: `[plugin:b1MongoRest:routesDefinitionCreation]`})
                     }
                 } else {

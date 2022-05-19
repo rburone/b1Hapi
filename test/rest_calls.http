@@ -35,10 +35,4 @@ content-type: application/json
     "roles": ["ADMIN"]
 }
 ###
-POST http://localhost:3500/api/submit
-content-type: application/json
-
-{
-    "email": "user1@domain.com",
-    "roles": ["ADMIN"]
-}
+DELETE http://localhost:3500/store/sub/test.gif
