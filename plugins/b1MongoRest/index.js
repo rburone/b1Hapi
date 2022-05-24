@@ -35,7 +35,7 @@ function genFilter(req, ObjectID) {
     let projection = {}
     if (Object.keys(req.params).length > 0) {
         Object.keys(req.params).forEach(key => {
-            if (key == '_id') {
+            if (key == '_id' && req.params['_id'].length == 24) {
                 req.params['_id'] = new ObjectID(req.params._id)
             }
         })
@@ -95,7 +95,7 @@ function createRoute(model, permissions, definition, apiPATH, verbose) {
                 }
                 if (verbose) {
                     console.log(`Last ${cmd} in ${model}: ${response.data.length} registers returned.`)
-                    // console.log(`Query: \n${JSON.stringify(match)}`)
+                    console.log(`Query: \n${JSON.stringify(match)}`)
                 }
 
                 return response
