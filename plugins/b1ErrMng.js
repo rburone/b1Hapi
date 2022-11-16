@@ -31,77 +31,70 @@ function say(type, title, msg, from) {
     }
 }
 
-function codeManager (error) {
-    switch (error) {
-        case 401:
-            return Boom.unauthorized()
-        case 404:
-            return Boom.notFound()
-        case 500:
-            return Boom.internal()
-        default:
-            return Boom.internal()
-    }
-}
-
-function strCodeManager(errorObj) {
-    switch (errorObj.error) {
+function genericError(code, message, from) {
+    const search = code || message
+    switch (search + '') {
         case 'Schema':
-            say('error', 'Schema', 'Invalid', errorObj.from)
+            say('error', 'Schema', 'Invalid', from)
             return Boom.internal()
         case 'Not sent':
-            say('warning', 'Email', 'Not sent', errorObj.from)
+            say('warning', 'Email', 'Not sent', from)
             return 'Not sent'
         case 'Unavailable':
-            say('error', 'Service', 'Unavailable', errorObj.from)
+            say('error', 'Service', 'Unavailable', from)
             return Boom.serverUnavailable()
-        default:
-            break;
-    }
-}
-
-function stdManager(errorObj) {
-    switch (errorObj.error.code) {
         case 'ESOCKET':
-            say('error', 'Connection', errorObj.error.message, errorObj.from)
+            say('error', 'Connection', message, from)
             return Boom.internal()
+        case 'NOCRITICAL':
+            say('warning', 'Atetion', message, from)
         case 'Not sent':
-            say('warning', 'Email', 'Not sent', errorObj.from)
+            say('warning', 'Email', 'Not sent', from)
             return 'Not sent'
         case 'ENOENT':
-            say('error', 'Internal', 'File not found', errorObj.from)
+            say('error', 'Internal', 'File not found', from)
+            return Boom.internal()
+        case '400':
+            say('error', 'Response', 'Bad Request', from)
+            return Boom.badRequest()
+        case '401':
+            return Boom.unauthorized()
+        case '404':
+            return Boom.notFound()
+        case '500':
+            say('error', 'Internal', message, from)
             return Boom.internal()
         default:
-            break;
+            return Boom.internal()
     }
 }
 
-function manager(errorObj) {
-    const name = errorObj.error.name || errorObj.error.constructor.name
+function manager({error, from}) {
+    const name = error?.constructor.name || 'Undefined'
     // console.log('ERROR RAW: ', `name: "${name}"`, errorObj)
-
     switch (name) {
         case 'Number':
-            return codeManager(errorObj.error)
+            return genericError(error.code)
         case 'String':
-            return strCodeManager(errorObj)
+            say('warning', 'DECPRECATED', 'Change STRING for ERROR', from)
+            return genericError(null, error, from)
         case 'Error':
-            return stdManager(errorObj)
+                return genericError(error.code, error.message, from)
         case 'MongoServerError':
-            say('warning', `MongoServer: ${errorObj.error.code}`, errorObj.error.keyValue, errorObj.from)
+            say('warning', `MongoServer: ${error.code}`, error.keyValue, from)
             return 'unchange'
         case 'MongoInvalidArgumentError':
-            say('error', 'MongoServer:', errorObj.error.message, errorObj.from)
+            say('error', 'MongoServer:', error.message, from)
             return Boom.internal()
         case 'TypeError':
-            say('error', 'Internal TypeError', errorObj.error.message, errorObj.from)
+            say('error', 'Internal TypeError', error.message, from)
             return Boom.internal()
         case 'ValidationError':
-            say('error', 'Validation', errorObj.error.message, errorObj.from)
-            console.table(errorObj.error._original)
+            say('error', 'Validation', error.message, from)
+            console.table(error._original)
             return Boom.internal()
         default:
-            say('error', name, errorObj.error.message, errorObj.from)
+            say('error', name, error?.message, from)
             return Boom.internal()
     }
 }
@@ -111,7 +104,7 @@ function assert(assert, toAssert = {}, schema = {}, from = '') {
         assert(toAssert, schema)
     } catch (error) {
         say('error', 'Assertion', error.message, from)
-        throw(`\n${CODE.BgYellow}${CODE.FgRed} --- ASSERTION ERROR SERVER STOP ---${CODE.Reset}\n`)
+        throw(`\n${CODE.BgYellow}${CODE.FgRed} --- ASSERTION ERROR: SERVER STOPED ---${CODE.Reset}\n`)
     }
 }
 

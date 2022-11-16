@@ -33,10 +33,16 @@ function genFilter(req, ObjectID) {
     let match = {}
     let sort = false
     let projection = {}
+
     if (Object.keys(req.params).length > 0) {
         Object.keys(req.params).forEach(key => {
-            if (key == '_id') {
+            // (::[]::) Used while model schemes are not defined
+            if (key == '_id' && req.params['_id'].length == 24) {
                 req.params['_id'] = new ObjectID(req.params._id)
+            } else if (!isNaN(req.params['_id'])) {
+                const num_id = req.params._id * 1
+                req.params['$or'] = [{"_id": num_id}, {"_id": req.params._id}]
+                delete req.params._id
             }
         })
         match = req.params
@@ -55,6 +61,14 @@ function genFilter(req, ObjectID) {
         }
     }
     return {match, sort, projection}
+}
+
+function genSet(payload) {
+    const set = {$set:{}}
+    Object.keys(payload).forEach(key => {
+        set.$set[key] = payload[key]
+    })
+    return set
 }
 
 function createRoute(model, permissions, definition, apiPATH, verbose) {
@@ -79,10 +93,14 @@ function createRoute(model, permissions, definition, apiPATH, verbose) {
         routerDef.handler = async (req) => {
             const db = req.mongo.db
             const ObjectID = req.mongo.ObjectID;
-
             let response
+
             try {
                 const {match, sort, projection} = genFilter(req, ObjectID)
+                if (verbose) {
+                    console.log(`Try ${cmd} in ${model}.`)
+                    console.log(`Query: \n${JSON.stringify(match)}`)
+                }
                 const result = await db.collection(model)[cmd](match, projection)
                 if (result.constructor.name == 'FindCursor') {
                     if (sort) {
@@ -93,20 +111,78 @@ function createRoute(model, permissions, definition, apiPATH, verbose) {
                 } else {
                     response = {data: result}
                 }
+                
                 if (verbose) {
                     console.log(`Last ${cmd} in ${model}: ${response.data.length} registers returned.`)
-                    // console.log(`Query: \n${JSON.stringify(match)}`)
                 }
 
                 return response
             } catch (err) {
-                throw Boom.internal('Internal MongoDB error', err)
+                throw Boom.internal('Internal MongoDB error [GET]', err)
+            }
+        }
+    } else if (method.toUpperCase() == 'PATCH') {
+        routerDef.handler = async (req) => {
+            const db = req.mongo.db
+            const ObjectID = req.mongo.ObjectID;
+            
+            if (req.payload) {
+                const {match} = genFilter(req, ObjectID)
+                const set = genSet(req.payload)
+
+                if (verbose) {
+                    console.log(`Try ${cmd} in ${model}.`)
+                    console.log(`Query: \n${JSON.stringify(match)}`)
+                    console.log('Set: %s', JSON.stringify(set))
+                }
+
+                try {
+                    const result = await db.collection(model)[cmd](match, set)
+                    return result
+                }
+                catch (error) {
+                    throw Boom.internal('Internal MongoDB error [PATCH]', error)
+                }
+            } else {
+                throw Boom.badRequest('Internal MongoDB error [PATCH]', 'No payload')
+            }
+        }
+    } else if (method.toUpperCase() == 'PUT') {
+        routerDef.handler = async (req) => {
+            console.log('PUT', req.params)
+            const db = req.mongo.db
+            const ObjectID = req.mongo.ObjectID;
+
+            if (req.payload) {
+                const {match} = genFilter(req, ObjectID)
+                // const set = genSet(req.payload)
+
+                if (verbose) {
+                    console.log(`Try ${cmd} in ${model}.`)
+                    console.log(`Query: \n${JSON.stringify(match)}`)
+                    console.log(req.payload)
+                }
+
+                try {
+                    const result = await db.collection(model)[cmd](match, req.payload)
+                    return result
+                }
+                catch (error) {
+                    throw Boom.internal('Internal MongoDB error [PUT]', error)
+                }
+            } else {
+                throw Boom.badRequest('Internal MongoDB error [PUT]', 'No payload')
             }
         }
     } else {
         routerDef.handler = async (req) => {
             const db = req.mongo.db
             const payload = req.payload || null
+
+            if (verbose) {
+                console.log(`Try ${cmd} in ${model}.`)
+                console.log(`Query: \n${JSON.stringify(match)}`)
+            }
 
             try {
                 const result = await db.collection(model)[cmd](payload).toArray()
@@ -141,7 +217,7 @@ module.exports = {
                         server.createRoute(route)
                     } else {
                         const error = new Error(`No exists \x1b[1m${value.name}\x1b[0m named route`)
-                        error.name = 'Definition'
+                        error.code = 'NOCRITICAL'
                         server.errManager({error, from: `[plugin:b1MongoRest:routesDefinitionCreation]`})
                     }
                 } else {

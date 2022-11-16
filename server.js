@@ -126,9 +126,10 @@ module.exports = {
                     {
                         plugin: require('./plugins/b1FileStorage'),
                         options: {
-                            path   : '/store',
-                            storage: '../storage',
-                            sysRoot: config.sysRoot,
+                            path      : '/store',
+                            storage   : '../storage',
+                            sysRoot   : config.sysRoot,
+                            autoCreate: false,
                         },
                     },
                 ],
@@ -143,8 +144,8 @@ module.exports = {
                         host: config.mail.host,
                         port: config.mail.port,
                         auth: {
-                            user: config.mail.user,
-                            pass: config.mail.pass
+                            user: process.env.MAIL_USER,
+                            pass: process.env.MAIL_PASS
                         }
                     }
                 },

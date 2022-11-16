@@ -61,13 +61,15 @@ module.exports = {
                         if (info.accepted.length > 0) {
                             return 'ok'
                         } else {
-                            return server.errManager({error: 'Not sent', from: '[plugin:b1nodemailer:sendMail]'})
+                            const error = new Error('Not sent')
+                            return server.errManager({error, from: '[plugin:b1nodemailer:sendMail]'})
                         }
                     } else {
                         return server.errManager({error, from: '[plugin:b1nodemailer:validation]'})
                     }
                 } else {
-                    return server.errManager({error: 'Unavailable', from: '[plugin:b1nodemailer:unavailable]'})
+                    const error = new Error('Unavailable')
+                    return server.errManager({error, from: '[plugin:b1nodemailer:unavailable]'})
                 }
             }
         });

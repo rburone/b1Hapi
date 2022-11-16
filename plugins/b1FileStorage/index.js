@@ -7,14 +7,13 @@
 const Joi  = require('joi');
 const fs   = require('fs')
 const path = require('path')
-const Hoek = require('@hapi/hoek');
-const {exit} = require('process');
 
-const {string} = Joi.types();
+const {string, boolean} = Joi.types();
 const OptionsSchema = Joi.object({
-    path   : string.pattern(/^\/(?!\/).*[^\/]$/, 'REST API path'),
-    storage: string,
-    sysRoot: string,
+    path      : string.pattern(/^\/(?!\/).*[^\/]$/, 'REST API path'),
+    storage   : string,
+    sysRoot   : string,
+    autoCreate: boolean,
 })
 
 module.exports = {
@@ -32,6 +31,6 @@ module.exports = {
 
         const routes = require('./routes.js')
         routes.forEach(route => route.path = `${options.path}${route.path}`) // 👨‍💻 Put the apipath prefix to all routes
-        server.createRoute(routes, {sysStorePath, errManager: server.errManager})
+        server.createRoute(routes, {sysStorePath, errManager: server.errManager, autoCreate: options.autoCreate})
     }
 }

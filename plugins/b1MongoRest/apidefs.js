@@ -10,6 +10,10 @@ const API = {
         {'name': 'findOne', 'cmd': 'find', 'method': 'GET', 'path': '/:model/findOne'},
         // PATCH attributes for a model instance and persist it into the data source.
         {'name': 'updateID', 'cmd': 'findOneAndUpdate', 'method': 'PATCH', 'path': '/:model/{_id}'},
+        // PATCH attributes for a model instance and persist it into the data source.
+        {'name': 'update', 'cmd': 'findAndUpdate', 'method': 'PATCH', 'path': '/:model'},
+        // REPLACE model instance and persist it into the data source.
+        {'name': 'replaceID', 'cmd': 'replaceOne', 'method': 'PUT', 'path': '/:model/{_id}'},
         // Update an existing model instance or insert a new one into the data source based on the where criteria.
         {'name': 'upsert', 'cmd': 'update', 'method': 'POST', 'path': '/:model/upsert'},
         // Create a new instance of the model and persist it into the data source.
