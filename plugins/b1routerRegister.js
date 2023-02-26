@@ -10,7 +10,7 @@
 *
 * Route /route add to get list of registered routes.
 */
-const Joi = require('@hapi/joi')
+const Joi = require('joi')
 
 const validMethods = ['GET', 'PUT', 'POST', 'PATCH', 'DELETE']
 

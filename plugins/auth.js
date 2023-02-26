@@ -7,7 +7,7 @@
 * Check duration of accesstoken
 */
 const AuthBearer = require('hapi-auth-bearer-token');
-const Joi = require('@hapi/joi')
+const Joi = require('joi')
 
 async function checkToken(token, req, modelToken, modelUser) {
     try {

@@ -1,39 +1,37 @@
 {
-  "name"       : "b1hapi",
-  "version"    : "1.0.1",
+  "name": "b1hapi",
+  "version": "1.1.0",
   "description": "Simple Hapi framework implementation",
-  "repository" : {
+  "repository": {
     "type": "git",
-    "url" : "git://github.com/rburone/b1Hapi.git"
+    "url": "git://github.com/rburone/b1Hapi.git"
   },
   "main": "init.js",
   "scripts": {
-    "test" : "lab",
-    "lint" : "eslint --ext .js ./",
+    "test": "lab",
+    "lint": "eslint --ext .js ./",
     "start": "node init",
-    "dev"  : "nodemon init"
+    "dev": "nodemon init"
   },
-  "author"      : "Ricardo D. Burone",
-  "license"     : "ISC",
+  "author": "Ricardo D. Burone",
+  "license": "ISC",
   "dependencies": {
     "@antoniogiordano/hacli": "^1.0.2",
-    "@hapi/glue"            : "^8.0.0",
-    "@hapi/hapi"            : "^20.2.1",
-    "@hapi/hoek"            : "^9.2.1",
-    "@hapi/inert"           : "^6.0.5",
-    "@hapi/joi"             : "^17.1.1",
-    "@hapi/vision"          : "^6.1.0",
-    "bcryptjs"              : "^2.4.3",
-    "disinfect"             : "^1.1.0",
-    "dotenv"                : "^16.0.0",
-    "ejs"                   : "^3.1.7",
+    "@hapi/glue": "^9.0.1",
+    "@hapi/hapi": "^21.3.0",
+    "@hapi/hoek": "^11.0.2",
+    "@hapi/inert": "^7.0.1",
+    "@hapi/vision": "^7.0.1",
+    "bcryptjs": "^2.4.3",
+    "disinfect": "^2.0.0",
+    "dotenv": "^16.0.3",
+    "ejs": "^3.1.8",
     "hapi-auth-bearer-token": "^8.0.0",
-    "hapi-mongodb"          : "^10.0.3",
-    "nodemailer"            : "^6.7.3"
+    "hapi-mongodb": "^10.0.3",
+    "joi": "^17.8.3",
+    "nodemailer": "^6.9.1"
   },
   "devDependencies": {
-    "@hapi/code": "^8.0.7",
-    "@hapi/lab" : "^24.6.0",
-    "eslint"    : "^8.13.0"
+    "eslint": "^8.34.0"
   }
 }

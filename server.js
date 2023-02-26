@@ -4,7 +4,7 @@ const Glue   = require('@hapi/glue')    // Server composer
 const ejs    = require('ejs')           // View engine
 const vision = require('@hapi/vision')  // View hadler
 const inert  = require('@hapi/inert');  // Statics routes handler
-const Joi    = require('@hapi/joi')
+const Joi    = require('joi')
 
 const apiPattern = /^[^\/].*[^\/]$/
 module.exports = {
@@ -165,7 +165,7 @@ module.exports = {
             await server.register(inert)
             await server.route(require('./router/static-routes.js'))
         }
-        
+
         // █▄ ▄█ ██▀ ▀█▀ █▄█ ▄▀▄ █▀▄ ▄▀▀
         // █ ▀ █ █▄▄  █  █ █ ▀▄▀ █▄▀ ▄█▀
         server.method('getConf', (seccion = false) => {
@@ -176,7 +176,7 @@ module.exports = {
         })
 
         await server.start()
-        
+
         return server
     }
 }
