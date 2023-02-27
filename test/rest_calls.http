@@ -36,3 +36,7 @@ content-type: application/json
 }
 ###
 DELETE http://localhost:3500/store/sub/test.gif
+###
+GET http://localhost:3500/store/sub/test.gif
+###
+GET http://localhost:3500/shell/hello.js?q=1

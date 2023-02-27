@@ -1,0 +1,930 @@
+{
+  _allowInternals: false,
+  _closed: false,
+  _core: {
+    actives: WeakMap { <items unknown>
+        },
+    app: {},
+    auth: { api: {}, settings: [Object
+            ]
+        },
+    caches: Map(1) { '_default' => [Object
+            ]
+        },
+    compression: { decoders: [Object
+            ], encodings: [Array
+            ], encoders: [Object
+            ]
+        },
+    controlled: null,
+    dependencies: [],
+    events: {},
+    heavy: Heavy {
+      settings: [Object
+            ],
+      _eventLoopTimer: null,
+      _eventLoopUtilization: [Object
+            ],
+      _loadBench: [Object
+            ],
+      load: [Object
+            ]
+        },
+    info: {
+      created: 1677505077829,
+      started: 1677505078055,
+      host: 'HMXL5070R34',
+      port: 3500,
+      protocol: 'http',
+      id: 'HMXL5070R34: 5072:lemv7m11',
+      uri: 'http: //HMXL5070R34:3500',
+      address: ': :'
+        },
+    instances: Set(18) {
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ]
+        },
+    listener: Server {
+      maxHeaderSize: undefined,
+      insecureHTTPParser: undefined,
+      _events: [Object: null prototype
+            ],
+      _eventsCount: 4,
+      _maxListeners: undefined,
+      _connections: 1,
+      _handle: [TCP
+            ],
+      _usingWorkers: false,
+      _workers: [],
+      _unref: false,
+      allowHalfOpen: true,
+      pauseOnConnect: false,
+      noDelay: false,
+      keepAlive: false,
+      keepAliveInitialDelay: 0,
+      httpAllowHalfOpen: false,
+      timeout: 0,
+      keepAliveTimeout: 5000,
+      maxHeadersCount: null,
+      maxRequestsPerSocket: 0,
+      headersTimeout: 60000,
+      requestTimeout: 0,
+      _connectionKey: '6: : : : 3500',
+            [Symbol(IncomingMessage)
+            ]: [Function: IncomingMessage
+            ],
+            [Symbol(ServerResponse)
+            ]: [Function: ServerResponse
+            ],
+            [Symbol(kCapture)
+            ]: false,
+            [Symbol(async_id_symbol)
+            ]: 55
+        },
+    methods: { methods: [Object
+            ]
+        },
+    mime: Mimos {},
+    onConnection: [Function (anonymous)
+        ],
+    phase: 'started',
+    plugins: { inert: [Object
+            ]
+        },
+    registrations: {
+      b1ErrMng: [Object
+            ],
+      routerRegister: [Object
+            ],
+      auth: [Object
+            ],
+      'hapi-auth-bearer-token': [Object
+            ],
+      'hapi-mongodb': [Object
+            ],
+      b1MongoRest: [Object
+            ],
+      userManagment: [Object
+            ],
+      hacli: [Object
+            ],
+      disinfect: [Object
+            ],
+      b1CSVfy: [Object
+            ],
+      toolsRoutes: [Object
+            ],
+      b1FileStorage: [Object
+            ],
+      b1ShellExec: [Object
+            ],
+      b1nodemailer: [Object
+            ],
+      '@hapi/vision': [Object
+            ],
+      '@hapi/inert': [Object
+            ]
+        },
+    registring: 0,
+    Request: [class Request
+        ],
+    Response: [class Response
+        ],
+    requestCounter: { value: 10001, min: 10000, max: 99999
+        },
+    root: {
+      _core: [Circular *1
+            ],
+      app: {},
+      auth: [Object
+            ],
+      decorations: [Object
+            ],
+      cache: [Function
+            ],
+      events: {},
+      info: [Object
+            ],
+      listener: [Server
+            ],
+      load: [Object
+            ],
+      methods: [Object
+            ],
+      mime: Mimos {},
+      plugins: [Object
+            ],
+      registrations: [Object
+            ],
+      settings: [Object
+            ],
+      states: [Object
+            ],
+      type: 'tcp',
+      version: '21.3.0',
+      realm: [Object
+            ],
+      errManager: [Function: manager
+            ],
+      assert: [Function: assert
+            ],
+      createRoute: [Function (anonymous)
+            ],
+      mongo: [Object
+            ],
+      hacli: [Object
+            ],
+      views: [Function (anonymous)
+            ],
+      render: [AsyncFunction (anonymous)
+            ],
+      getViewsManager: [Function (anonymous)
+            ]
+        },
+    router: {
+      settings: [Object
+            ],
+      routes: [Map
+            ],
+      ids: Map(0) {},
+      vhosts: null,
+      specials: [Object
+            ]
+        },
+    settings: {
+      port: 3500,
+      debug: [Object
+            ],
+      tls: false,
+      routes: [Object
+            ],
+      app: {},
+      compression: [Object
+            ],
+      info: {},
+      load: [Object
+            ],
+      mime: {},
+      operations: [Object
+            ],
+      query: {},
+      router: [Object
+            ],
+      autoListen: true
+        },
+    sockets: Set(1) {
+            [Socket
+            ]
+        },
+    started: true,
+    states: { settings: [Object
+            ], cookies: {}, names: []
+        },
+    toolkit: { _toolkit: [class Toolkit
+            ]
+        },
+    type: 'tcp',
+    validator: null,
+    extensionsSeq: 71,
+    extensions: { server: [Object
+            ], route: [Object
+            ]
+        },
+    decorations: {
+      handler: [Map
+            ],
+      request: [Map
+            ],
+      response: Map(0) {},
+      server: [Map
+            ],
+      toolkit: [Map
+            ],
+      requestApply: null,
+      public: [Object
+            ]
+        }
+    },
+  _entity: null,
+  _eventContext: { request: [Circular *2
+        ]
+    },
+  _events: null,
+  _expectContinue: false,
+  _isInjected: false,
+  _isPayloadPending: false,
+  _isReplied: false,
+  _route: {
+    method: 'get',
+    path: '/shell/{name*
+        }',
+    settings: {
+      cors: [Object
+            ],
+      files: [Object
+            ],
+      cache: [Object
+            ],
+      compression: {},
+      ext: {},
+      json: [Object
+            ],
+      log: [Object
+            ],
+      payload: null,
+      response: [Object
+            ],
+      security: null,
+      state: [Object
+            ],
+      timeout: [Object
+            ],
+      validate: [Object
+            ],
+      bind: [Object
+            ],
+      auth: false,
+      vhost: undefined,
+      plugins: [Object
+            ],
+      app: {},
+      handler: [Function: handler
+            ]
+        },
+    _core: {
+      actives: [WeakMap
+            ],
+      app: {},
+      auth: [Object
+            ],
+      caches: [Map
+            ],
+      compression: [Object
+            ],
+      controlled: null,
+      dependencies: [],
+      events: {},
+      heavy: [Heavy
+            ],
+      info: [Object
+            ],
+      instances: [Set
+            ],
+      listener: [Server
+            ],
+      methods: [Object
+            ],
+      mime: Mimos {},
+      onConnection: [Function (anonymous)
+            ],
+      phase: 'started',
+      plugins: [Object
+            ],
+      registrations: [Object
+            ],
+      registring: 0,
+      Request: [class Request
+            ],
+      Response: [class Response
+            ],
+      requestCounter: [Object
+            ],
+      root: [Object
+            ],
+      router: [Object
+            ],
+      settings: [Object
+            ],
+      sockets: [Set
+            ],
+      started: true,
+      states: [Object
+            ],
+      toolkit: [Object
+            ],
+      type: 'tcp',
+      validator: null,
+      extensionsSeq: 71,
+      extensions: [Object
+            ],
+      decorations: [Object
+            ]
+        },
+    realm: {
+      _extensions: [Object
+            ],
+      modifiers: [Object
+            ],
+      parent: [Object
+            ],
+      plugin: 'routerRegister',
+      pluginOptions: [Object
+            ],
+      plugins: {},
+      _rules: null,
+      settings: [Object
+            ],
+      validator: null
+        },
+    _special: false,
+    _analysis: { segments: [Array
+            ], fingerprint: '/shell/#', params: [Array
+            ]
+        },
+    params: [ 'name'
+        ],
+    fingerprint: '/shell/#',
+    public: {
+      method: 'get',
+      path: '/shell/{name*
+            }',
+      vhost: undefined,
+      realm: [Object
+            ],
+      settings: [Object
+            ],
+      fingerprint: '/shell/#',
+      auth: [Object
+            ]
+        },
+    _prerequisites: null,
+    _extensions: {
+      onPreResponse: [Object
+            ],
+      onPostResponse: [Object
+            ],
+      onPreAuth: [Object
+            ],
+      onCredentials: [Object
+            ],
+      onPostAuth: [Object
+            ],
+      onPreHandler: [Object
+            ],
+      onPostHandler: [Object
+            ]
+        },
+    _cycle: [
+            [AsyncFunction (anonymous)
+            ],
+            [Object
+            ],
+            [Function (anonymous)
+            ],
+            [Object
+            ],
+            [AsyncFunction (anonymous)
+            ]
+        ],
+    _postCycle: [],
+    _marshalCycle: [
+            [Function (anonymous)
+            ],
+            [Function (anonymous)
+            ],
+            [Function (anonymous)
+            ],
+            [Function (anonymous)
+            ],
+            [Function (anonymous)
+            ],
+            [AsyncFunction (anonymous)
+            ],
+            [AsyncFunction (anonymous)
+            ]
+        ]
+    },
+  _serverTimeoutId: null,
+  _states: {},
+  _url: null,
+  _urlError: null,
+  app: {},
+  headers: {
+    'user-agent': 'vscode-restclient',
+    'accept-encoding': 'gzip, deflate',
+    host: 'localhost: 3500',
+    connection: 'close'
+    },
+  logs: [],
+  method: 'get',
+  mime: null,
+  orig: { params: { name: 'a'
+        }
+    },
+  params: { name: 'a'
+    },
+  paramsArray: [ 'a'
+    ],
+  path: '/shell/a',
+  payload: undefined,
+  plugins: {},
+  pre: {},
+  preResponses: {},
+  raw: {
+    req: IncomingMessage {
+      _readableState: [ReadableState
+            ],
+      _events: [Object: null prototype
+            ],
+      _eventsCount: 3,
+      _maxListeners: undefined,
+      socket: [Socket
+            ],
+      httpVersionMajor: 1,
+      httpVersionMinor: 1,
+      httpVersion: '1.1',
+      complete: true,
+      rawHeaders: [Array
+            ],
+      rawTrailers: [],
+      aborted: false,
+      upgrade: false,
+      url: '/shell/a?q=1',
+      method: 'GET',
+      statusCode: null,
+      statusMessage: null,
+      client: [Socket
+            ],
+      _consuming: false,
+      _dumped: false,
+            [Symbol(kCapture)
+            ]: false,
+            [Symbol(kHeaders)
+            ]: [Object
+            ],
+            [Symbol(kHeadersCount)
+            ]: 8,
+            [Symbol(kTrailers)
+            ]: null,
+            [Symbol(kTrailersCount)
+            ]: 0,
+            [Symbol(RequestTimeout)
+            ]: undefined
+        },
+    res: ServerResponse {
+      _events: [Object: null prototype
+            ],
+      _eventsCount: 2,
+      _maxListeners: undefined,
+      outputData: [],
+      outputSize: 0,
+      writable: true,
+      destroyed: false,
+      _last: false,
+      chunkedEncoding: false,
+      shouldKeepAlive: false,
+      maxRequestsOnConnectionReached: false,
+      _defaultKeepAlive: true,
+      useChunkedEncodingByDefault: true,
+      sendDate: true,
+      _removedConnection: false,
+      _removedContLen: false,
+      _removedTE: false,
+      _contentLength: null,
+      _hasBody: true,
+      _trailer: '',
+      finished: false,
+      _headerSent: false,
+      _closed: false,
+      socket: [Socket
+            ],
+      _header: null,
+      _keepAliveTimeout: 5000,
+      _onPendingData: [Function: bound updateOutgoingData
+            ],
+      req: [IncomingMessage
+            ],
+      _sent100: false,
+      _expect_continue: false,
+            [Symbol(kCapture)
+            ]: false,
+            [Symbol(kNeedDrain)
+            ]: false,
+            [Symbol(corked)
+            ]: 0,
+            [Symbol(kOutHeaders)
+            ]: null
+        }
+    },
+  response: null,
+  route: {
+    method: 'get',
+    path: '/shell/{name*
+        }',
+    vhost: undefined,
+    realm: {
+      _extensions: [Object
+            ],
+      modifiers: [Object
+            ],
+      parent: [Object
+            ],
+      plugin: 'routerRegister',
+      pluginOptions: [Object
+            ],
+      plugins: {},
+      _rules: null,
+      settings: [Object
+            ],
+      validator: null
+        },
+    settings: {
+      cors: [Object
+            ],
+      files: [Object
+            ],
+      cache: [Object
+            ],
+      compression: {},
+      ext: {},
+      json: [Object
+            ],
+      log: [Object
+            ],
+      payload: null,
+      response: [Object
+            ],
+      security: null,
+      state: [Object
+            ],
+      timeout: [Object
+            ],
+      validate: [Object
+            ],
+      bind: [Object
+            ],
+      auth: false,
+      vhost: undefined,
+      plugins: [Object
+            ],
+      app: {},
+      handler: [Function: handler
+            ]
+        },
+    fingerprint: '/shell/#',
+    auth: { access: [Function: access
+            ]
+        }
+    },
+  query: [Object: null prototype
+    ] { q: '1'
+    },
+  server: {
+    _core: {
+      actives: [WeakMap
+            ],
+      app: {},
+      auth: [Object
+            ],
+      caches: [Map
+            ],
+      compression: [Object
+            ],
+      controlled: null,
+      dependencies: [],
+      events: {},
+      heavy: [Heavy
+            ],
+      info: [Object
+            ],
+      instances: [Set
+            ],
+      listener: [Server
+            ],
+      methods: [Object
+            ],
+      mime: Mimos {},
+      onConnection: [Function (anonymous)
+            ],
+      phase: 'started',
+      plugins: [Object
+            ],
+      registrations: [Object
+            ],
+      registring: 0,
+      Request: [class Request
+            ],
+      Response: [class Response
+            ],
+      requestCounter: [Object
+            ],
+      root: [Circular *3
+            ],
+      router: [Object
+            ],
+      settings: [Object
+            ],
+      sockets: [Set
+            ],
+      started: true,
+      states: [Object
+            ],
+      toolkit: [Object
+            ],
+      type: 'tcp',
+      validator: null,
+      extensionsSeq: 71,
+      extensions: [Object
+            ],
+      decorations: [Object
+            ]
+        },
+    app: {},
+    auth: {
+      api: {},
+      settings: [Object
+            ],
+      scheme: [Function: bound scheme
+            ],
+      strategy: [Function: bound _strategy
+            ],
+      default: [Function: bound default
+            ],
+      test: [Function: bound test
+            ] AsyncFunction,
+      verify: [Function: bound verify
+            ] AsyncFunction,
+      lookup: [Function: bound lookup
+            ]
+        },
+    decorations: {
+      handler: [Array
+            ],
+      request: [Array
+            ],
+      response: [],
+      server: [Array
+            ],
+      toolkit: [Array
+            ]
+        },
+    cache: [Function: policy
+        ] { provision: [AsyncFunction (anonymous)
+            ]
+        },
+    events: {},
+    info: {
+      created: 1677505077829,
+      started: 1677505078055,
+      host: 'HMXL5070R34',
+      port: 3500,
+      protocol: 'http',
+      id: 'HMXL5070R34: 5072:lemv7m11',
+      uri: 'http: //HMXL5070R34:3500',
+      address: ': :'
+        },
+    listener: Server {
+      maxHeaderSize: undefined,
+      insecureHTTPParser: undefined,
+      _events: [Object: null prototype
+            ],
+      _eventsCount: 4,
+      _maxListeners: undefined,
+      _connections: 1,
+      _handle: [TCP
+            ],
+      _usingWorkers: false,
+      _workers: [],
+      _unref: false,
+      allowHalfOpen: true,
+      pauseOnConnect: false,
+      noDelay: false,
+      keepAlive: false,
+      keepAliveInitialDelay: 0,
+      httpAllowHalfOpen: false,
+      timeout: 0,
+      keepAliveTimeout: 5000,
+      maxHeadersCount: null,
+      maxRequestsPerSocket: 0,
+      headersTimeout: 60000,
+      requestTimeout: 0,
+      _connectionKey: '6: : : : 3500',
+            [Symbol(IncomingMessage)
+            ]: [Function: IncomingMessage
+            ],
+            [Symbol(ServerResponse)
+            ]: [Function: ServerResponse
+            ],
+            [Symbol(kCapture)
+            ]: false,
+            [Symbol(async_id_symbol)
+            ]: 55
+        },
+    load: { eventLoopDelay: 0, eventLoopUtilization: 0, heapUsed: 0, rss: 0
+        },
+    methods: {
+      sendEmail: [AsyncFunction: method
+            ],
+      getConf: [Function (anonymous)
+            ]
+        },
+    mime: Mimos {},
+    plugins: { inert: [Object
+            ]
+        },
+    registrations: {
+      b1ErrMng: [Object
+            ],
+      routerRegister: [Object
+            ],
+      auth: [Object
+            ],
+      'hapi-auth-bearer-token': [Object
+            ],
+      'hapi-mongodb': [Object
+            ],
+      b1MongoRest: [Object
+            ],
+      userManagment: [Object
+            ],
+      hacli: [Object
+            ],
+      disinfect: [Object
+            ],
+      b1CSVfy: [Object
+            ],
+      toolsRoutes: [Object
+            ],
+      b1FileStorage: [Object
+            ],
+      b1ShellExec: [Object
+            ],
+      b1nodemailer: [Object
+            ],
+      '@hapi/vision': [Object
+            ],
+      '@hapi/inert': [Object
+            ]
+        },
+    settings: {
+      port: 3500,
+      debug: [Object
+            ],
+      tls: false,
+      routes: [Object
+            ],
+      app: {},
+      compression: [Object
+            ],
+      info: {},
+      load: [Object
+            ],
+      mime: {},
+      operations: [Object
+            ],
+      query: {},
+      router: [Object
+            ],
+      autoListen: true
+        },
+    states: { settings: [Object
+            ], cookies: {}, names: []
+        },
+    type: 'tcp',
+    version: '21.3.0',
+    realm: {
+      _extensions: [Object
+            ],
+      modifiers: [Object
+            ],
+      parent: null,
+      plugin: undefined,
+      pluginOptions: {},
+      plugins: [Object
+            ],
+      _rules: null,
+      settings: [Object
+            ],
+      validator: null
+        },
+    errManager: [Function: manager
+        ],
+    assert: [Function: assert
+        ],
+    createRoute: [Function (anonymous)
+        ],
+    mongo: {
+      lib: [Object
+            ],
+      ObjectID: [Function
+            ],
+      ObjectId: [Function
+            ],
+      db: [Db
+            ],
+      client: [MongoClient
+            ]
+        },
+    hacli: { permissions: undefined, userPath: 'auth.credentials'
+        },
+    views: [Function (anonymous)
+        ],
+    render: [AsyncFunction (anonymous)
+        ],
+    getViewsManager: [Function (anonymous)
+        ]
+    },
+  state: {},
+  info: {
+    _request: [Circular *2
+        ],
+    received: 1677505087515,
+    referrer: '',
+    host: 'localhost: 3500',
+    hostname: 'localhost',
+    id: '1677505087515:HMXL5070R34: 5072:lemv7m11: 10000',
+    _remoteAddress: null,
+    _remotePort: null,
+    acceptEncoding: 'gzip',
+    cors: { isOriginMatch: true
+        },
+    responded: 0,
+    completed: 0
+    },
+  auth: {
+    isAuthenticated: false,
+    isAuthorized: false,
+    isInjected: false,
+    credentials: null,
+    artifacts: null,
+    strategy: null,
+    mode: null,
+    error: null,
+        [Symbol(auth.payload)
+        ]: true
+    }
+}

@@ -1,7 +1,7 @@
 'use strict'
-const Boom   = require('@hapi/boom')
-const fs     = require('fs')
-const Joi    = require('joi')
+// const Boom   = require('@hapi/boom')
+const fs  = require('fs')
+const Joi = require('joi')
 
 function checkPath(destPath, create) {
     let out = true
@@ -31,7 +31,7 @@ const {string, number, boolean, array} = Joi.types();
 module.exports = [
     {
         method : 'GET',
-        path   : '/file/{name*}',
+        path   : '/{name*}',
         options: {
             auth: false,
             validate: {
@@ -41,6 +41,7 @@ module.exports = [
             }
         },
         handler: (req) => {
+            //TODO: Enviar archivo al cliente
             console.log(req.params.name)
             return 'Bur1 Storage';
         }
@@ -65,7 +66,7 @@ module.exports = [
                 if (typeof(incoming[key]) == 'object') {
                     const {path, filename} = incoming[key]
                     let destPath = this.sysStorePath
-                    
+
                     if (req.params.subdir) {
                         const check = checkPath(`${destPath}/${req.params.subdir}`, this.autoCreate)
                         if (check.error) {
@@ -99,20 +100,22 @@ module.exports = [
                 })
             }
         },
-        handler: async function(req, h) {
+        handler: async function(req) {
             let result = true
             const path = req.params.name.split('/')
             const destPath = `${this.sysStorePath}/${path[0]}`
+            console.log('d', destPath)
             const {error} = checkPath(destPath, false)
             if (error) {
-                result = this.errManager({error, from: '[plugin:b1FileStorage:file_delete]'})
+                result = this.errManager({error, from: `[plugin:b1FileStorage:path_NotFound] => ${destPath}`})
             } else {
                 try {
-                    fs.unlink(`${destPath}/${path[1]}`, () => {
+                    const file = `${destPath}/${path[1]}`
+                    fs.unlink(file, () => {
                         result = true
                     })
                 } catch (error) {
-                    result = this.errManager({error, from: `[plugin:b1FileStorage:upload]`})
+                    result = this.errManager({error, from: `[plugin:b1FileStorage:delete] => ${file}`})
                 }
             }
             return result;
@@ -133,13 +136,14 @@ module.exports = [
             let result = true
             const filename = req.params.filename
             try {
-                fs.unlink(`${this.sysStorePath}/${filename}`, () => {
+                const file = `${this.sysStorePath}/${filename}`
+                fs.unlink(file, () => {
                     result = true
                 })
             } catch (error) {
-                result = this.errManager({error, from: `[plugin:b1FileStorage:delete:file]`})
+                result = this.errManager({error, from: `[plugin:b1FileStorage:delete:file] => ${file}`})
             }
-            
+
             return result;
         }
     },

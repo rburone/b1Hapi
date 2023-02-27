@@ -132,6 +132,14 @@ module.exports = {
                             autoCreate: false,
                         },
                     },
+                     {
+                        plugin: require('./plugins/b1ShellExec'),
+                        options: {
+                            path      : '/shell',
+                            scriptPath: '../scripts',
+                            sysRoot   : config.sysRoot,
+                        },
+                    },
                 ],
             }
         }
