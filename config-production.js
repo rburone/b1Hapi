@@ -39,7 +39,7 @@ module.exports = {
     },
     dataBase: {
         port   : 27017,
-        url    : 'mongodb://localhost/gestion-dev',               // [R] URL MongoDB collection
+        url    : 'mongodb://localhost/gestionStaging',            // [R] URL MongoDB collection
         defFile: `${__dirname}/plugins/b1MongoRest/apidefs.js`,   // [R] File with API definition
         path   : '/db',
     },

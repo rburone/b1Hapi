@@ -25,7 +25,7 @@ module.exports = {
         try {
             fs.accessSync(sysStorePath, fs.constants.R_OK | fs.constants.W_OK);
         } catch (error) {
-            server.errManager({error, from: '[plugin:b1FileStorage:access]'})
+            server.errManager({error, from: `[plugin:b1FileStorage:access] => ${sysStorePath}`})
             process.exit(1)
         }
 

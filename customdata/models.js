@@ -16,8 +16,9 @@ module.exports = {
     ],
     material: [
         {name: 'search', permissions: []},
-        {name: 'findID', permissions: ['USER']},
-        {name: 'updateID', permissions: ['USER']},
+        {name: 'findID', permissions: []},
+        {name: 'updateID', permissions: []},
+        {name: 'replaceID', permissions: []},
         {name: 'create', permissions: ['USER']},
     ],
     material_view: [
