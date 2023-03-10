@@ -106,12 +106,12 @@ function createRoute(model, permissions, definition, apiPATH, verbose) {
                     if (sort) {
                         response = {data: await result.sort(sort).toArray()}
                     }
-                    
+
                     response = {data: await result.toArray()}
                 } else {
                     response = {data: result}
                 }
-                
+
                 if (verbose) {
                     console.log(`Last ${cmd} in ${model}: ${response.data.length} registers returned.`)
                 }
@@ -125,7 +125,7 @@ function createRoute(model, permissions, definition, apiPATH, verbose) {
         routerDef.handler = async (req) => {
             const db = req.mongo.db
             const ObjectID = req.mongo.ObjectID;
-            
+
             if (req.payload) {
                 const {match} = genFilter(req, ObjectID)
                 const set = genSet(req.payload)
@@ -202,10 +202,10 @@ module.exports = {
     register(server, options) {
         server.assert(Joi.assert, options, internals.OptionsSchema, '[plugin:b1MongoRest:options]')
 
-        const modelDef     = options.api.model
-        const routesDef    = options.api.routes
-        const apiPATH      = options.path || ''
-        const verbose      = options.verbose || false
+        const modelDef  = options.api.model
+        const routesDef = options.api.routes
+        const apiPATH   = options.path || ''
+        const verbose   = options.verbose || false
 
         Object.keys(modelDef).forEach(modelName => {
             modelDef[modelName].forEach(ACLDef => {

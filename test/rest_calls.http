@@ -39,4 +39,6 @@ DELETE http://localhost:3500/store/sub/test.gif
 ###
 GET http://localhost:3500/store/sub/test.gif
 ###
-GET http://localhost:3500/shell/hello.js?q=1
+GET http://localhost:3500/img/20,10
+###
+GET http://localhost:3500/shell/hello.js

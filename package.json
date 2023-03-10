@@ -23,13 +23,15 @@
     "@hapi/inert": "^7.0.1",
     "@hapi/vision": "^7.0.1",
     "bcryptjs": "^2.4.3",
+    "canvas": "^2.11.0",
     "disinfect": "^2.0.0",
     "dotenv": "^16.0.3",
     "ejs": "^3.1.8",
     "hapi-auth-bearer-token": "^8.0.0",
     "hapi-mongodb": "^10.0.3",
     "joi": "^17.8.3",
-    "nodemailer": "^6.9.1"
+    "nodemailer": "^6.9.1",
+    "path2d-polyfill": "^2.0.1"
   },
   "devDependencies": {
     "eslint": "^8.34.0"
