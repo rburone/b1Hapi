@@ -33,6 +33,7 @@ function say(type, title, msg, from) {
 
 function genericError(code, message, from) {
     const search = code || message
+    console.log(code, message)
     switch (search + '') {
         case 'Schema':
             say('error', 'Schema', 'Invalid', from)
@@ -71,10 +72,9 @@ function genericError(code, message, from) {
 
 function manager({error, from}) {
     const name = error?.constructor.name || 'Undefined'
-    // console.log('ERROR RAW: ', `name: "${name}"`, errorObj)
     switch (name) {
         case 'Number':
-            return genericError(error.code)
+            return genericError(error)
         case 'String':
             say('warning', 'DECPRECATED', 'Change STRING for ERROR', from)
             return genericError(null, error, from)
