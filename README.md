@@ -22,10 +22,15 @@ Use _.env_ for credentials and specify the name of config file to use.
 # Configuration file to read
 CONFIG_FILE = config-development
 
-# Database credentials
-DB_USER  = nouser
-DB_PASS  = nopass
-AUTH_SRC = admin
+# Database 1 credentials
+DB_USER_DB1NAME  = nouser
+DB_PASS_DB1NAME  = nopass
+AUTH_SRC_DB1NAME = admin
+
+# Database 2 credentials
+DB_USER_DB2NAME  = nouser
+DB_PASS_DB2NAME  = nopass
+AUTH_SRC_DB2NAME = admin
 
 # Mailer credentials
 MAIL_USER = nouser
