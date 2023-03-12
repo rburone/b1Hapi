@@ -33,7 +33,6 @@ function say(type, title, msg, from) {
 
 function genericError(code, message, from) {
     const search = code || message
-    console.log(code, message)
     switch (search + '') {
         case 'Schema':
             say('error', 'Schema', 'Invalid', from)
@@ -81,7 +80,7 @@ function manager({error, from}) {
         case 'Error':
                 return genericError(error.code, error.message, from)
         case 'MongoServerError':
-            say('warning', `MongoServer: ${error.code}`, error.keyValue, from)
+            say('warning', `MongoServer: ${error.code}`, error.codeName, from)
             return 'unchange'
         case 'MongoInvalidArgumentError':
             say('error', 'MongoServer:', error.message, from)

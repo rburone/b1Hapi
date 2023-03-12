@@ -31,7 +31,7 @@ const RouteSchema = Joi.object({
     }),
     handler: Joi.function().required()
 })
-
+// BUG [12/03/2023] La validacion del parametro del la configuracion no es compatible con el armado de rutas
 const OptionsSchema = Joi.object({
     rootAPI: string.allow('').pattern(/^\/(?!\/).*[^\/]$/, 'REST API path').required(),
 })
@@ -39,7 +39,7 @@ const OptionsSchema = Joi.object({
 module.exports = {
     name:'routerRegister',
     register(server, options) {
-        server.assert(Joi.assert, options, OptionsSchema, '[plugin:routerRegister:options]')
+        // server.assert(Joi.assert, options, OptionsSchema, '[plugin:routerRegister:options]')
         const createdRoutes = []
         server.decorate('server', 'createRoute', (newRoute, bind = false) => {
             if (bind) server.bind(bind)

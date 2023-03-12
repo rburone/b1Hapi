@@ -1,16 +1,17 @@
 module.exports = {
     server: {
-        port      : 3500,                    // [R] Server port
-        host      : 'localhost',             // [R] Server URL
-        publicPath: `${__dirname}/public`,   // [R] System path for static files or empty to disable
-        rootAPI   : '',                      // [R] REST api path for all routes created
-        userAPI   : '',                      // [R] REST api path for user managment
-        toolsAPI  : 'api',                   // [R] REST api path for access special routes
-        viewsPath : 'views',                 // [R] System path (realtive) of templates to render views
-        useTls    : false,                   // [R] will it use certificates? (https)
-        verbose   : true,                    // [R] Will it print some messages on console?
-        sendMails : true,                    // [R] Will it send emails notificacions?
-        customData: `${__dirname}/customdata`// [R] System path for custom and plugins data
+        port      : 3500,                     // [R] Server port
+        publicPath: `${__dirname}/public`,    // [R] System path for static files or empty to disable
+        rootAPI   : '',                       // [R] REST api path for all routes created
+        userAPI   : '',                       // [R] REST api path for user managment
+        toolsAPI  : 'api',                    // [R] REST api path for access special routes
+        viewsPath : 'views',                  // [R] System path (realtive) of templates to render views
+        useTls    : false,                    // [R] will it use certificates? (https)
+        verbose   : true,                     // [R] Will it print some messages on console?
+        sendMails : true,                     // [R] Will it send emails notificacions?
+        customData: `${__dirname}/customdata`,// TODO MOVER [R] System path for custom and plugins data
+        // --------------------------------------------[ OPTIONAL ]
+        // host      : 'localhost',           // [D] Server URL
     },
     certificate: {
         key : '/certificates/localhost-key.pem', // [R] Path to file with key if useTls is true
@@ -18,7 +19,7 @@ module.exports = {
     },
     security: {
         modelToken  : 'AccessToken',      // [R] Model with tokens data
-        modelUser   : 'Usuario',          // [R] Model with users data
+        modelUser   : 'User',             // [R] Model with users data
         // --------------------------------------------[ OPTIONAL ]
         // verifyEmail : false,           // [D] Is verification of email required?
         // ttl         : 1209600,         // [D] Token duration
@@ -37,12 +38,21 @@ module.exports = {
         port     : '25',            // [R] Port
         fromEmail: 'app@app.com',   // [R] Outgoing email address from the server to send validation codes
     },
-    dataBase: {
-        port   : 27017,
-        url    : 'mongodb://localhost/gestion-dev',               // [R] URL MongoDB collection
-        defFile: `${__dirname}/plugins/b1MongoRest/apidefs.js`,   // [R] File with API definition
-        path   : '/db',
-    },
+    dataSource: {
+        defFile   : `${__dirname}/plugins/b1MongoRest/apidefs.js`,   // [R] File with API definition
+        path      : '/db',
+        conections: [
+            {
+                name: 'mongodb4',                         // [R] Conection name
+                uri : 'mongodb://localhost:27017/hapi',   // [R] URL MongoDB collection
+            },
+            {
+                name: 'mongoDev',                         // [R] Conection name
+                uri : 'mongodb://localhost:27017/gestion-dev',   // [R] URL MongoDB collection
+            }
+        ]
+    }
+    ,
     views: {
         // emailVerificationCode  : 'email_code',       // [D] Email to send verification code to new user
         // formChkVerificationCode: 'form_verify_code', // [D] HTML form for check and validate code

@@ -1,16 +1,20 @@
 'use strict'
-const Boom       = require('@hapi/boom')
-const {generate} = require('../../lib/methods').b1Lib
+const Boom         = require('@hapi/boom')
+const { generate } = require('../../lib/methods').b1Lib
+const Joi          = require('joi')
+const C = require('../../lib/color_codes')
 
-// const handler = function(r,h) {
-//     console.log(this.marco, h.context.marco)
-//     return this.marco
-// }
+const { string, boolean, array } = Joi.types();
+
+  // const handler = function(r,h) {
+  //     console.log(this.marco, h.context.marco)
+  //     return this.marco
+  // }
 
 module.exports = [
     {
-        method: 'GET',
-        path: '',
+        method : 'GET',
+        path   : '',
         options: {
             auth: false
         },
@@ -19,8 +23,8 @@ module.exports = [
         }
     },
     {
-        method: 'GET',
-        path: '/config',
+        method : 'GET',
+        path   : '/config',
         options: {
             auth: false
         },
@@ -36,8 +40,8 @@ module.exports = [
         }
     },
     {
-        method: 'GET',
-        path: '/testDB',
+        method : 'GET',
+        path   : '/testDB',
         options: {
             plugins: {
                 hacli: {
@@ -50,7 +54,7 @@ module.exports = [
             try {
                 const result = await db.command({
                     dbStats: 1,
-                    // listCollections: 1
+                      // listCollections: 1
                 })
                 return result
             } catch (err) {
@@ -59,29 +63,32 @@ module.exports = [
         }
     },
     {
-        method: 'GET',
-        path: '/init_server',
+        method : 'GET',
+        path   : '/init_server',
         options: {
             auth: false
         },
         handler: async (req) => {
             const config = req.server.methods.getConf()
-            const code = generate(6)
+
+            const code      = generate(6)
             const superUser = {
-                _id: 'super@bur1.com',
-                password: '*',
-                emailVerified: true,
-                roles: config.userManagment.roles,
+                _id           : 'super@bur1.com',
+                password      : '*',
+                emailVerified : true,
+                roles         : config.acl.roles,
                 validationCode: code
             }
             const db = req.mongo.db
             try {
-                const result = await db.collection(config.userManagment.modelUser).insertOne(superUser)
+                const result = await db.collection(config.security.modelUser).insertOne(superUser)
                 if (result.insertedId) {
+                    console.log(`${C.BgGreen+C.FgWhite}SERVER INITIALIZED!!${C.Reset}\n`)
                     return {superUser}
                 }
             } catch (error) {
                 if (error.code == 11000) {
+                    console.log(`${C.BgRed + C.FgWhite}WARNING!! TRYING REINITIALIZE SERVER!!${C.Reset} ${new Date()}\n`)
                     return 'Server was initialized before'
                 } else {
                     throw Boom.internal('Internal MongoDB error', error)

@@ -1,52 +1,25 @@
 'use strict'
-const usrMng     = require('./lib')
-const Joi        = require('joi')
-const Hoek       = require('@hapi/hoek');
+const usrMng = require('./lib')
+const Joi    = require('joi')
 
 const {string, number, boolean, array} = Joi.types();
-const internals = {
-    defaults: {
-        path                   : '',
-        passMinLen             : 8,
-        verifyEmail            : false,
-        ttl                    : 1209600,
-        lenVerifCode           : 6,
-        oneTimeCode            : true,
-        secureChange           : false,
-        userAdmin              : 'ADMIN',
-        roles                  : ['SUPER_ADMIN', 'ADMIN', 'USER', 'GUEST'],
-        emailVerificationCode  : 'email_code',
-        formChkVerificationCode: 'form_verify_code',
-        formChangePass         : 'form_change_pass',
-    },
-    schema: Joi.object({
-        modelUser : string.required(),
-        modelToken: string.required(),
-        fromEmail : string.email().required(),
 
-        path                   : string.allow(''),
-        passMinLen             : number.integer(),
-        verifyEmail            : boolean,
-        ttl                    : number,
-        lenVerifCode           : number,
-        oneTimeCode            : boolean,
-        secureChange           : boolean,
-        userAdmin              : string,
-        roles                  : array,
-        sendMails              : boolean,
-        emailVerificationCode  : string,
-        formChkVerificationCode: string,
-        formChangePass         : string,
-    })
-};
+function getDbCollection(rq, collection = '') {
+    const model = rq.server.methods.getConf('models')
+    const idx   = rq.server.methods.getConf('indxDB')
+    const db    = rq.mongo.db
+
+    if (Object.keys(idx).length > 1) {
+        const conNumer = idx[model[collection].dataSource]
+        return db[conNumer].collection(collection)
+    } else {
+        return db.collection(collection)
+    }
+}
 
 module.exports = {
     name: 'userManagment',
-    register(server, options) {
-        const settings = Hoek.applyToDefaults(internals.defaults, options);
-        server.assert(Joi.assert, options, internals.schema, '[plugin:userManagment:register]');
-        server.assert(Joi.assert, {userAdmin: settings.userAdmin}, Joi.object({userAdmin: string.valid(...settings.roles)}), '[plugin:userManagment:register]')
-
+    register(server, settings) {
         const routes = [
             { // LOGIN user
                 method: 'POST',
@@ -145,7 +118,7 @@ module.exports = {
                         }
                     } else {
                         return server.errManager({error: code.error, from: `[plugin:userManagment:setVerificationCode]`})
-                        
+
                     }
                 }
             },
@@ -220,19 +193,18 @@ module.exports = {
             },
             { // Check if is valid the verification code for user
                 method: 'GET',
-                path: '/chkCode',
+                path: '/chkCode/{email}/{code}',
                 options: {
                     auth: false,
                     validate: {
-                        query: Joi.object({
+                        params: Joi.object({
                             email: string.email().required(),
                             code : string.length(settings.lenVerifCode).required()
                         })
                     }
                 },
                 handler: async (req) => {
-                    const db = req.mongo.db
-                    const modelUser = db.collection(settings.modelUser)
+                    const modelUser = getDbCollection(req, settings.modelUser)
                     const result = await usrMng.chkVerificationCode(modelUser, req.params.email, req.params.code)
 
                     if (!result.error) {
@@ -391,7 +363,7 @@ module.exports = {
                     }
 
                     const result = await usrMng.update(modelUser, userData)
-                
+
                     if (!result.error) {
                         if (result == 'ok') {
                             return 'ok'

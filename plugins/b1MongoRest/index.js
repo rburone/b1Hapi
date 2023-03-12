@@ -5,29 +5,34 @@ const Joi  = require('joi')
 const validMethods = ['GET', 'PUT', 'POST', 'PATCH', 'DELETE']
 
 const {string, boolean, array} = Joi.types();
-const internals = {
-    RouteSchema: {
-        name   : string.required(),
-        cmd    : string.required(),
-        method : string.uppercase().valid(...validMethods).required(),
-        path   : string.required(),
-        descrip: string,
+
+const RouteSchema = Joi.object({
+    name   : string.required(),
+    cmd    : string.required(),
+    method : string.uppercase().valid(...validMethods).required(),
+    path   : string.required(),
+    descrip: string,
+})
+
+const ACLSchema = Joi.object({
+    name       : string.required(),
+    permissions: array.required(), // TODO: View if posible validates width config.acl.roles [11/03/2023]
+})
+
+const ModelSchema = Joi.object({
+    name      : string.required(),
+    dataSource: string.required(),
+    actions   : array.items(ACLSchema).required()
+})
+
+const OptionsSchema = Joi.object({
+    api: {
+        routes: array.items(RouteSchema).required(),
+        model : array.items(ModelSchema).required()
     },
-
-    ACLSchema: Joi.object({
-        name       : string.required(),
-        permissions: array.required(),
-    }),
-
-    OptionsSchema: Joi.object({
-        api: Joi.object({
-            routes: array.items(Joi.object(this.RouteSchema)).required(),
-            model : Joi.object().required()
-        }),
-        path   : string.allow('').required(),
-        verbose: boolean,
-    })
-}
+    path   : string.allow('').required(),
+    verbose: boolean,
+})
 
 function genFilter(req, ObjectID) {
     let match = {}
@@ -73,7 +78,6 @@ function genSet(payload) {
 
 function createRoute(model, permissions, definition, apiPATH, verbose) {
     const {cmd, method, path} = definition
-
     const routerDef = {
         method,
         path: apiPATH + path.replace(':model', model),
@@ -200,28 +204,23 @@ function createRoute(model, permissions, definition, apiPATH, verbose) {
 module.exports = {
     name: 'b1MongoRest',
     register(server, options) {
-        server.assert(Joi.assert, options, internals.OptionsSchema, '[plugin:b1MongoRest:options]')
+        server.assert(Joi.assert, options, OptionsSchema, '[plugin:b1MongoRest:options]')
 
         const modelDef  = options.api.model
         const routesDef = options.api.routes
         const apiPATH   = options.path || ''
         const verbose   = options.verbose || false
 
-        Object.keys(modelDef).forEach(modelName => {
-            modelDef[modelName].forEach(ACLDef => {
-                const {error, value} = internals.ACLSchema.validate(ACLDef)
-                if (!error) {
-                    const defRoute = routesDef.find(rt => rt.name == value.name)
-                    if (defRoute) {
-                        const route = createRoute(modelName, value.permissions, defRoute, apiPATH, verbose)
-                        server.createRoute(route)
-                    } else {
-                        const error = new Error(`No exists \x1b[1m${value.name}\x1b[0m named route`)
-                        error.code = 'NOCRITICAL'
-                        server.errManager({error, from: `[plugin:b1MongoRest:routesDefinitionCreation]`})
-                    }
+        modelDef.forEach(modelData => {
+            modelData.actions.forEach(ACLDef => {
+                const defRoute = routesDef.find(rt => rt.name == ACLDef.name)
+                if (defRoute) {
+                    const route = createRoute(modelData.name, ACLDef.permissions, defRoute, apiPATH, verbose)
+                    server.createRoute(route)
                 } else {
-                    server.errManager({error, from: `[plugin:b1MongoRest:ACLValidation]`})
+                    const error = new Error(`No exists \x1b[1m${ACLDef.name}\x1b[0m named route`)
+                    error.code = 'NOCRITICAL'
+                    server.errManager({error, from: `[plugin:b1MongoRest:routesDefinitionCreation]`})
                 }
             })
         })

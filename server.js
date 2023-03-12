@@ -4,31 +4,14 @@ const Glue   = require('@hapi/glue')    // Server composer
 const ejs    = require('ejs')           // View engine
 const vision = require('@hapi/vision')  // View hadler
 const inert  = require('@hapi/inert');  // Statics routes handler
-const Joi    = require('joi')
 
-const apiPattern = /^[^\/].*[^\/]$/
+const apiPattern = /^[^\/].*[^\/]$/;
 module.exports = {
-    async init (config) {
-        const {string, number, boolean} = Joi.types();
-        const ConfigServerSchema = Joi.object({
-            port      : number.port().allow('').required(),
-            host      : string.required(),
-            publicPath: string.allow('').required(),
-            rootAPI   : string.allow('').pattern(apiPattern, "Don't start with /").required(),
-            userAPI   : string.allow('').pattern(apiPattern, "Don't start with /").required(),
-            toolsAPI  : string.allow('').pattern(apiPattern, "Don't start with /").required(),
-            viewsPath : string.pattern(apiPattern, "Don't start with /").required(),
-            useTls    : boolean.required(),
-            sendMails : boolean.required(),
-            verbose   : boolean,
-            customData: string.required()
-        })
-        Joi.assert(config.server, ConfigServerSchema)
-
+    async init(config) {
         const manifest = {
             server: {
                 port  : config.server.port,
-                debug : (config.NODE_ENV == 'development') ? {request: ['handler']}: {},
+                debug : (config.NODE_ENV == 'development') ? { request: ['handler'] }: {},
                 tls   : config.tls,
                 routes: {
                     cors : true,
@@ -40,49 +23,38 @@ module.exports = {
             register: {
                 plugins: [
                     {// 🚨 REQUIRED FOR ORTHER PLUGINS must to be first
-                        plugin: require('./plugins/b1ErrMng'),
+                        plugin : require('./plugins/b1ErrMng'),
                         options: {
                             doLog: true
                         }
                     },
                     {// 🚨 REQUIRED FOR ORTHER PLUGINS must to be second
-                        plugin: require('./plugins/b1routerRegister'),
+                        plugin : require('./plugins/b1routerRegister'),
                         options: {
                             rootAPI: config.server.rootAPI,
                         },
                     },
-                    {
-                        plugin: require('./plugins/auth'),
+                    { // AUTH
+                        plugin : require('./plugins/auth'),
                         options: {
                             modelToken: config.security.modelToken,
                             modelUser : config.security.modelUser,
                         }
                     },
-                    {
-                        plugin: require('hapi-mongodb'),
-                        options: {
-                            url: config.dataBase.url,
-                            settings: {
-                                auth: {
-                                    username  : process.env.DB_USER,
-                                    password  : process.env.DB_PASS,
-                                    authSource: process.env.AUTH_SRC,
-                                },
-                                useUnifiedTopology: true,
-                            },
-                            decorate: true
-                        }
+                    { // MongoDB
+                        plugin : require('hapi-mongodb'),
+                        options: config.mongoConfig
                     },
-                    {
-                        plugin: require('./plugins/b1MongoRest'),
+                    { // REST
+                        plugin : require('./plugins/b1MongoRest'),
                         options: {
-                            api    : require(config.dataBase.defFile),
-                            path   : config.dataBase.path,
+                            api    : require(config.dataSource.defFile),
+                            path   : config.dataSource.path,
                             verbose: config.server.verbose,
                         }
                     },
-                    {
-                        plugin: require('./plugins/userManagment'),
+                    { // User Mangment
+                        plugin : require('./plugins/userManagment'),
                         options: {
                             modelUser              : config.security.modelUser,
                             modelToken             : config.security.modelToken,
@@ -103,11 +75,11 @@ module.exports = {
                         }
                     },
                     {
-                        plugin: require('@antoniogiordano/hacli'),
+                        plugin : require('@antoniogiordano/hacli'),
                         options: {}
                     },
                     {
-                        plugin: require('disinfect'),
+                        plugin : require('disinfect'),
                         options: {
                             disinfectQuery  : true,
                             disinfectParams : true,
@@ -118,13 +90,13 @@ module.exports = {
                         plugin: require('./plugins/b1csvfy')
                     },
                     {
-                        plugin: require('./plugins/toolsRoutes'),
+                        plugin : require('./plugins/toolsRoutes'),
                         options: {
                             path: config.server.toolsAPI,
                         },
                     },
                     {
-                        plugin: require('./plugins/b1FileStorage'),
+                        plugin : require('./plugins/b1FileStorage'),
                         options: {
                             path      : '/store',
                             storage   : '../storage',
@@ -132,18 +104,18 @@ module.exports = {
                             autoCreate: false,
                         },
                     },
+                      // {
+                      //     plugin: require('./plugins/b1ShellExec'),
+                      //     options: {
+                      //         path: '/shell',
+                      //         scriptPath: '../scripts',
+                      //         sysRoot: config.sysRoot,
+                      //     },
+                      // },
                     {
-                        plugin: require('./plugins/b1ShellExec'),
+                        plugin : require('./plugins/duval'),
                         options: {
-                            path      : '/shell',
-                            scriptPath: '../scripts',
-                            sysRoot   : config.sysRoot,
-                        },
-                    },
-                    {
-                        plugin: require('./plugins/duval'),
-                        options: {
-                            path      : '/duval'
+                            path: '/duval'
                         },
                     },
                 ],
@@ -153,7 +125,7 @@ module.exports = {
         if (config.server.sendMails) {
             manifest.register.plugins.push(
                 {
-                    plugin: require('./plugins/b1nodemailer'),
+                    plugin : require('./plugins/b1nodemailer'),
                     options: {
                         host: config.mail.host,
                         port: config.mail.port,
@@ -170,9 +142,9 @@ module.exports = {
 
         await server.register(vision)
         server.views({
-            engines: {ejs},
+            engines   : { ejs },
             relativeTo: __dirname,
-            path: config.server.viewsPath
+            path      : config.server.viewsPath
         })
 
         if (config.server?.publicPath.length > 0) {
@@ -180,8 +152,8 @@ module.exports = {
             await server.route(require('./router/static-routes.js'))
         }
 
-        // █▄ ▄█ ██▀ ▀█▀ █▄█ ▄▀▄ █▀▄ ▄▀▀
-        // █ ▀ █ █▄▄  █  █ █ ▀▄▀ █▄▀ ▄█▀
+          // █▄ ▄█ ██▀ ▀█▀ █▄█ ▄▀▄ █▀▄ ▄▀▀
+          // █ ▀ █ █▄▄  █  █ █ ▀▄▀ █▄▀ ▄█▀
         server.method('getConf', (seccion = false) => {
             if (seccion) {
                 return config[seccion]

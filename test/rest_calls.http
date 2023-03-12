@@ -1,5 +1,7 @@
 http://localhost:3500/api
 ###
+http://localhost:3500/api/init_server
+###
 POST http://localhost:3500/login HTTP/1.1
 content-type: application/json
 
@@ -8,7 +10,7 @@ content-type: application/json
     "password": "abcd1234"
 }
 ###
-http://localhost:3500/chkCode/user1@domain.com/808840
+http://localhost:3500/chkCode/super@bur1.com/854824
 ###
 http://localhost:3500/validationForm
 ###
