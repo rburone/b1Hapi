@@ -1,3 +1,6 @@
+// Permissions with ['*'] any rol but with authentication
+// Permissions with [] not need authentication
+
 module.exports = [
     {
         name      : 'User',
@@ -9,9 +12,9 @@ module.exports = [
         ]
     },
     {
-        name: 'Usuario',
+        name      : 'Usuario',
         dataSource: 'mongoDev',
-        actions: [
+        actions   : [
             { name: 'search', permissions: ['ADMIN'] },
             { name: 'findID', permissions: ['ADMIN'] },
             { name: 'updateID', permissions: ['ADMIN'] },
@@ -21,7 +24,7 @@ module.exports = [
         name      : 'lugar',
         dataSource: 'mongodb4',
         actions   : [
-            { name: 'search', permissions: [] },
+            { name: 'search', permissions: ['*'] },
             { name: 'findID', permissions: ['USER'] },
             { name: 'updateID', permissions: ['USER'] },
         ]
@@ -30,7 +33,7 @@ module.exports = [
         name      : 'activo_lineal',
         dataSource: 'mongodb4',
         actions   : [
-            { name: 'search', permissions: [] },
+            { name: 'search', permissions: ['*'] },
             { name: 'findID', permissions: ['USER'] },
             { name: 'updateID', permissions: ['USER'] },
         ]
@@ -39,10 +42,10 @@ module.exports = [
         name      : 'material',
         dataSource: 'mongodb4',
         actions   : [
-            { name: 'search', permissions: [] },
-            { name: 'findID', permissions: [] },
-            { name: 'updateID', permissions: [] },
-            { name: 'replaceID', permissions: [] },
+            { name: 'search', permissions: ['*'] },
+            { name: 'findID', permissions: ['*'] },
+            { name: 'updateID', permissions: ['*'] },
+            { name: 'replaceID', permissions: ['*'] },
             { name: 'create', permissions: ['USER'] },
         ]
     },
@@ -50,7 +53,7 @@ module.exports = [
         name      : 'material_view',
         dataSource: 'mongodb4',
         actions   : [
-            { name: 'search', permissions: [] },
+            { name: 'search', permissions: ['*'] },
             { name: 'findID', permissions: ['USER'] },
         ]
     },
@@ -58,7 +61,7 @@ module.exports = [
         name      : 'tramitesae_view',
         dataSource: 'mongodb4',
         actions   : [
-            { name: 'search', permissions: [] },
+            { name: 'search', permissions: ['*'] },
             { name: 'findID', permissions: ['USER'] },
         ]
     },
@@ -66,7 +69,7 @@ module.exports = [
         name      : 'tramitesae',
         dataSource: 'mongodb4',
         actions   : [
-            { name: 'search', permissions: [] },
+            { name: 'search', permissions: ['*'] },
             { name: 'findID', permissions: ['USER'] },
             { name: 'updateID', permissions: ['USER'] },
             { name: 'create', permissions: ['USER'] },
@@ -74,6 +77,27 @@ module.exports = [
     },
     {
         name      : 'ensayo_view',
+        dataSource: 'mongodb4',
+        actions   : [
+            { name: 'search', permissions: [] },
+        ]
+    },
+    {
+        name      : 'Activos',
+        dataSource: 'mongodb4',
+        actions   : [
+            { name: 'search', permissions: [] },
+        ]
+    },
+    {
+        name      : 'trafosP',
+        dataSource: 'mongodb4',
+        actions   : [
+            { name: 'search', permissions: [] },
+        ]
+    },
+    {
+        name      : 'trabajos_TP',
         dataSource: 'mongodb4',
         actions   : [
             { name: 'search', permissions: [] },

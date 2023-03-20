@@ -17,7 +17,7 @@ server.init(config).then(server => {
         console.table(server.methods.getConf('server'))
         console.log('\n')
     } else {
-        console.log(new Date(), 'START OK!\n')
+        console.log(new Date(), server.info.uri, 'START OK!\n')
     }
 }).catch(err => {
     console.log(err)

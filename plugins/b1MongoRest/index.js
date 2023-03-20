@@ -32,6 +32,7 @@ const OptionsSchema = Joi.object({
     },
     path   : string.allow('').required(),
     verbose: boolean,
+    dbList : Joi.object()
 })
 
 function genFilter(req, ObjectID) {
@@ -76,14 +77,16 @@ function genSet(payload) {
     return set
 }
 
-function createRoute(model, permissions, definition, apiPATH, verbose) {
-    const {cmd, method, path} = definition
+function createRoute(modelData, permissions, definition, apiPATH, verbose, dbList) {
+    const { cmd, method, path } = definition
+    const { name, dataSource } = modelData
+
     const routerDef = {
         method,
-        path: apiPATH + path.replace(':model', model),
+        path: apiPATH + path.replace(':model', name),
     }
 
-    if (permissions.length > 0) {
+    if (permissions.length > 0 && permissions[0] != '*') {
         routerDef.options = {
             plugins: {
                 hacli: {
@@ -91,21 +94,28 @@ function createRoute(model, permissions, definition, apiPATH, verbose) {
                 }
             }
         }
+    } else {
+        routerDef.options = {
+            auth: false
+        }
     }
+
+    const idxDB = dbList[dataSource]
 
     if (method.toUpperCase() == 'GET') {
         routerDef.handler = async (req) => {
-            const db = req.mongo.db
+            const db = req.mongo.db[idxDB]
+
             const ObjectID = req.mongo.ObjectID;
             let response
 
             try {
                 const {match, sort, projection} = genFilter(req, ObjectID)
                 if (verbose) {
-                    console.log(`Try ${cmd} in ${model}.`)
+                    console.log(`Try ${cmd} in ${name}.`)
                     console.log(`Query: \n${JSON.stringify(match)}`)
                 }
-                const result = await db.collection(model)[cmd](match, projection)
+                const result = await db.collection(name)[cmd](match, projection)
                 if (result.constructor.name == 'FindCursor') {
                     if (sort) {
                         response = {data: await result.sort(sort).toArray()}
@@ -117,7 +127,7 @@ function createRoute(model, permissions, definition, apiPATH, verbose) {
                 }
 
                 if (verbose) {
-                    console.log(`Last ${cmd} in ${model}: ${response.data.length} registers returned.`)
+                    console.log(`Last ${cmd} in ${name}: ${response.data.length} registers returned.`)
                 }
 
                 return response
@@ -127,7 +137,7 @@ function createRoute(model, permissions, definition, apiPATH, verbose) {
         }
     } else if (method.toUpperCase() == 'PATCH') {
         routerDef.handler = async (req) => {
-            const db = req.mongo.db
+            const db = req.mongo.db[idxDB]
             const ObjectID = req.mongo.ObjectID;
 
             if (req.payload) {
@@ -135,13 +145,13 @@ function createRoute(model, permissions, definition, apiPATH, verbose) {
                 const set = genSet(req.payload)
 
                 if (verbose) {
-                    console.log(`Try ${cmd} in ${model}.`)
+                    console.log(`Try ${cmd} in ${name}.`)
                     console.log(`Query: \n${JSON.stringify(match)}`)
                     console.log('Set: %s', JSON.stringify(set))
                 }
 
                 try {
-                    const result = await db.collection(model)[cmd](match, set)
+                    const result = await db.collection(name)[cmd](match, set)
                     return result
                 }
                 catch (error) {
@@ -154,7 +164,7 @@ function createRoute(model, permissions, definition, apiPATH, verbose) {
     } else if (method.toUpperCase() == 'PUT') {
         routerDef.handler = async (req) => {
             console.log('PUT', req.params)
-            const db = req.mongo.db
+            const db = req.mongo.db[idxDB]
             const ObjectID = req.mongo.ObjectID;
 
             if (req.payload) {
@@ -162,13 +172,13 @@ function createRoute(model, permissions, definition, apiPATH, verbose) {
                 // const set = genSet(req.payload)
 
                 if (verbose) {
-                    console.log(`Try ${cmd} in ${model}.`)
+                    console.log(`Try ${cmd} in ${dataSource}.${name}.`)
                     console.log(`Query: \n${JSON.stringify(match)}`)
                     console.log(req.payload)
                 }
 
                 try {
-                    const result = await db.collection(model)[cmd](match, req.payload)
+                    const result = await db.collection(name)[cmd](match, req.payload)
                     return result
                 }
                 catch (error) {
@@ -180,16 +190,16 @@ function createRoute(model, permissions, definition, apiPATH, verbose) {
         }
     } else {
         routerDef.handler = async (req) => {
-            const db = req.mongo.db
+            const db = req.mongo.db[idxDB]
             const payload = req.payload || null
 
             if (verbose) {
-                console.log(`Try ${cmd} in ${model}.`)
+                console.log(`Try ${cmd} in ${name}.`)
                 console.log(`Query: \n${JSON.stringify(match)}`)
             }
 
             try {
-                const result = await db.collection(model)[cmd](payload).toArray()
+                const result = await db.collection(name)[cmd](payload).toArray()
                 return result
             }
             catch (err) {
@@ -210,12 +220,13 @@ module.exports = {
         const routesDef = options.api.routes
         const apiPATH   = options.path || ''
         const verbose   = options.verbose || false
+        const dbList    = options.dbList
 
         modelDef.forEach(modelData => {
             modelData.actions.forEach(ACLDef => {
                 const defRoute = routesDef.find(rt => rt.name == ACLDef.name)
                 if (defRoute) {
-                    const route = createRoute(modelData.name, ACLDef.permissions, defRoute, apiPATH, verbose)
+                    const route = createRoute(modelData, ACLDef.permissions, defRoute, apiPATH, verbose, dbList)
                     server.createRoute(route)
                 } else {
                     const error = new Error(`No exists \x1b[1m${ACLDef.name}\x1b[0m named route`)

@@ -51,6 +51,7 @@ module.exports = {
                             api    : require(config.dataSource.defFile),
                             path   : config.dataSource.path,
                             verbose: config.server.verbose,
+                            dbList : config.dbList
                         }
                     },
                     { // User Mangment
@@ -74,7 +75,7 @@ module.exports = {
                             formChangePass         : config.views.formChangePass,
                         }
                     },
-                    {
+                    { // hacli
                         plugin : require('@antoniogiordano/hacli'),
                         options: {}
                     },

@@ -41,24 +41,41 @@ module.exports = [
     },
     {
         method : 'GET',
-        path   : '/testDB',
+        path   : '/testDB/{n?}',
         options: {
+            // auth: false
             plugins: {
                 hacli: {
-                    permission: 'USER'
+                    permission: '*'
                 }
             }
         },
         handler: async (req) => {
             const db = req.mongo.db
-            try {
-                const result = await db.command({
-                    dbStats: 1,
-                      // listCollections: 1
-                })
-                return result
-            } catch (err) {
-                throw Boom.internal('Internal MongoDB error', err)
+            if (Array.isArray(db)) {
+                const idx = req.params.n ? req.params.n : 0
+                const con = db[idx]
+                try {
+                    const result = await con.command({
+                        dbStats: 1,
+                        // listCollections: 1
+                    })
+                    // console.log(con.s.namespace.db, 'OK')
+                    return result
+                } catch (err) {
+                    throw Boom.internal('Internal MongoDB error', err)
+                }
+            } else {
+                try {
+                    const result = await db.command({
+                        dbStats: 1,
+                        // listCollections: 1
+                    })
+                    // console.log(con.s.namespace.db, 'OK')
+                    return result
+                } catch (err) {
+                    throw Boom.internal('Internal MongoDB error', err)
+                }
             }
         }
     },
