@@ -105,20 +105,14 @@ module.exports = {
                             autoCreate: false,
                         },
                     },
-                      // {
-                      //     plugin: require('./plugins/b1ShellExec'),
-                      //     options: {
-                      //         path: '/shell',
-                      //         scriptPath: '../scripts',
-                      //         sysRoot: config.sysRoot,
-                      //     },
-                      // },
-                    {
-                        plugin : require('./plugins/duval'),
-                        options: {
-                            path: '/duval'
-                        },
-                    },
+                    // {
+                    //     plugin: require('./plugins/b1ShellExec'),
+                    //     options: {
+                    //         path: '/shell',
+                    //         scriptPath: '../scripts',
+                    //         sysRoot: config.sysRoot,
+                    //     },
+                    // },
                 ],
             }
         }

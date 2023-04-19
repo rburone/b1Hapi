@@ -7,12 +7,11 @@ const C            = require('./lib/color_codes')   // Basic library for console
 const config       = configLoader.read()            // Read configuration file configured in .env
 
 server.init(config).then(server => {
-    if (false) {
+    if (true) {
         console.log(`\n\nb1Hapi ${C.Bright}v.%s${C.Reset} running on ${C.Bright}%s${C.Reset}`, config.version, server.info.uri)
         console.log(`Started from: ${C.Bright}%s${C.Reset}`, config.sysRoot)
         console.log(`Node_env: ${C.Bright}%s${C.Reset}`, config.NODE_ENV)
         console.log(`Config: ${C.Bright}%s${C.Reset}`, config.file)
-        console.log(`DB: ${C.Bright}%s${C.Reset}`, config.dataBase.url)
         console.log('%s', new Date())
         console.table(server.methods.getConf('server'))
         console.log('\n')

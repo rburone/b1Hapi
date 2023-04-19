@@ -1,7 +1,6 @@
 module.exports = {
     server: {
         port      : 3500,                    // [R] Server port
-        host      : 'localhost',             // [R] Server URL
         publicPath: `${__dirname}/public`,   // [R] System path for static files or empty to disable
         rootAPI   : '',                      // [R] REST api path for all routes created
         userAPI   : '',                      // [R] REST api path for user managment
@@ -37,11 +36,19 @@ module.exports = {
         port     : '25',            // [R] Port
         fromEmail: 'app@app.com',   // [R] Outgoing email address from the server to send validation codes
     },
-    dataBase: {
-        port   : 27017,
-        url    : 'mongodb://localhost/gestionStaging',            // [R] URL MongoDB collection
-        defFile: `${__dirname}/plugins/b1MongoRest/apidefs.js`,   // [R] File with API definition
-        path   : '/db',
+    dataSource: {
+        defFile   : `${__dirname}/plugins/b1MongoRest/apidefs.js`,   // [R] File with API definition
+        path      : '/db',
+        conections: [
+            {
+                name: 'mongodb4',                           // [R] Conection name
+                uri : 'mongodb://128.0.5.58:27044/maxclon', // [R] URL MongoDB collection
+            },
+            {
+                name: 'mongoStage',                         // [R] Conection name
+                uri : 'mongodb://localhost:27017/gestionStaging',   // [R] URL MongoDB collection
+            }
+        ]
     },
     views: {
         // emailVerificationCode  : 'email_code',       // [D] Email to send verification code to new user

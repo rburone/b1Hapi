@@ -1,6 +1,7 @@
 'use strict'
 const Boom = require('@hapi/boom')
 const Joi  = require('joi')
+const C    = require('../../lib/color_codes')
 
 const validMethods = ['GET', 'PUT', 'POST', 'PATCH', 'DELETE']
 
@@ -109,10 +110,9 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
         if (methodUC == 'GET') {
             const { match, sort, projection } = genFilter(req, ObjectID)
 
-            if (verbose) {
-                console.log(`Try ${cmd} in ${name}.`)
-                console.log(`Query: \n${JSON.stringify(match)}`)
-            }
+            // if (verbose) {
+            //     console.log(`Query: \n${JSON.stringify(match)}`)
+            // }
 
             try {
                 const result = await db.collection(name)[cmd](match, projection)
@@ -120,15 +120,16 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
                 if (result.constructor.name == 'FindCursor') {
                     if (sort) {
                         response = { data: await result.sort(sort).toArray() }
+                    } else {
+                        response = { data: await result.toArray() }
                     }
-
-                    response = { data: await result.toArray() }
                 } else {
                     response = { data: result }
                 }
 
                 if (verbose) {
-                    console.log(`Last ${cmd} in ${name}: ${response.data.length} registers returned.`)
+                    // console.log(`Query: ${JSON.stringify(match)}`)
+                    console.log(`${C.BgWhite + C.FgBlack + (new Date()).toTimeString().split(' ')[0] + C.Reset} ${C.FgGreen + cmd + C.Reset} in ${C.FgGreen + name + C.Reset}: ${response.data.length} registers returned.`)
                 }
 
                 return response
@@ -183,11 +184,11 @@ module.exports = {
     register(server, options) {
         server.assert(Joi.assert, options, OptionsSchema, '[plugin:b1MongoRest:options]')
 
-        const modelDef = options.api.model
+        const modelDef  = options.api.model
         const routesDef = options.api.routes
-        const apiPATH = options.path || ''
-        const verbose = options.verbose || false
-        const dbList = options.dbList
+        const apiPATH   = options.path || ''
+        const verbose   = options.verbose || false
+        const dbList    = options.dbList
 
         modelDef.forEach(modelData => {
             modelData.actions.forEach(ACLDef => {

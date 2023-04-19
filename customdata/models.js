@@ -1,4 +1,4 @@
-// Permissions with ['*'] any rol but with authentication
+// Permissions with ['*'] any rol but needs authentication
 // Permissions with [] not need authentication
 
 module.exports = [
@@ -76,7 +76,7 @@ module.exports = [
         ]
     },
     {
-        name      : 'ensayo_view',
+        name      : 'resultado_ensayo',
         dataSource: 'mongodb4',
         actions   : [
             { name: 'search', permissions: [] },
@@ -84,6 +84,13 @@ module.exports = [
     },
     {
         name      : 'Activos',
+        dataSource: 'mongodb4',
+        actions   : [
+            { name: 'search', permissions: [] },
+        ]
+    },
+    {
+        name      : 'Activos_view',
         dataSource: 'mongodb4',
         actions   : [
             { name: 'search', permissions: [] },
@@ -100,6 +107,20 @@ module.exports = [
         name      : 'trabajos_TP',
         dataSource: 'mongodb4',
         actions   : [
+            { name: 'search', permissions: [] },
+        ]
+    },
+    {
+        name: 'licenciasMTO',
+        dataSource: 'mongodb4',
+        actions: [
+            { name: 'search', permissions: [] },
+        ]
+    },
+    {
+        name: 'Ubicaciones',
+        dataSource: 'mongodb4',
+        actions: [
             { name: 'search', permissions: [] },
         ]
     }

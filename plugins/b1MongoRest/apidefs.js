@@ -4,9 +4,9 @@ const API = {
     routes: [
         // Find all instances of the model matched by filter from the data source.
         {'name': 'search', 'cmd': 'find', 'method': 'get', 'path': '/:model'},
-        // Find a model instance by {id} from the data source. HACER: Ver como usar findOne
+        // Find a model instance by {id} from the data source. // TODO: HACER: Ver como usar findOne
         {'name': 'findID', 'cmd': 'find', 'method': 'GET', 'path': '/:model/{_id}'},
-        // Find first instance of the model matched by filter from the data source.  HACER: Ver como usar findOne
+        // Find first instance of the model matched by filter from the data source. // TODO: HACER: Ver como usar findOne
         {'name': 'findOne', 'cmd': 'find', 'method': 'GET', 'path': '/:model/findOne'},
         // PATCH attributes for a model instance and persist it into the data source.
         {'name': 'updateID', 'cmd': 'findOneAndUpdate', 'method': 'PATCH', 'path': '/:model/{_id}'},
