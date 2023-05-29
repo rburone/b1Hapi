@@ -43,13 +43,9 @@ module.exports = {
         path      : '/db',
         conections: [
             {
-                name: 'mongodb4',                           // [R] Conection name
-                uri : 'mongodb://128.0.5.58:27044/maxclon', // [R] URL MongoDB collection
-            }/*,
-            {
-                name: 'mongoDev',                         // [R] Conection name
-                uri : 'mongodb://localhost:27017/gestion-dev',   // [R] URL MongoDB collection
-            }*/
+                name: 'mongodb4',                             // [R] Conection name
+                uri : 'mongodb://128.0.5.58:27044/maxclon',   // [R] URL MongoDB collection
+            }
         ]
     },
     views: {

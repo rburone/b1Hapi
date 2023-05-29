@@ -1,16 +1,21 @@
 <html>
 
+<head>
+    <link rel="stylesheet" href="/views.css">
+</head>
+
 <body>
-    
-    <div>
-        <h1>Change password</h1>
-        <form method="post" action="<%= url %>">
-            <br>
-                User: <input type="text" name="email" /></br>
-                Current Password: <input type="password" name="actual" maxlength="<%= passMinLen %>"/></br>
-                New Password: <input type="password" name="new" maxlength="<%= passMinLen %>" /></br>
-            </p>
-            <input type="submit" label="Verify">
+    <div class="card">
+        <form id="form" method="POST" action="<%= url %>">
+            <h5>Change password:</h5>
+            <div>
+                <p>
+                    User: <input class="link" type="text" name="email" required /></br>
+                    Current Password: <input type="password" name="actual" maxlength="<%= passMinLen %>" required /></br>
+                    New Password: <input type="password" name="new" maxlength="<%= passMinLen %>" required /></br>
+                </p>
+                <input class="action" type="submit" label="Verify">
+            </div>
         </form>
     </div>
 </body>

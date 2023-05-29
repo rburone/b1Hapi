@@ -8,10 +8,10 @@ const validMethods = ['GET', 'PUT', 'POST', 'PATCH', 'DELETE']
 const { string, boolean, array } = Joi.types();
 
 const RouteSchema = Joi.object({
-    name: string.required(),
-    cmd: string.required(),
-    method: string.uppercase().valid(...validMethods).required(),
-    path: string.required(),
+    name   : string.required(),
+    cmd    : string.required(),
+    method : string.uppercase().valid(...validMethods).required(),
+    path   : string.required(),
     descrip: string,
 })
 
@@ -43,7 +43,7 @@ function genFilter(req, ObjectID) {
 
     if (Object.keys(req.params).length > 0) {
         Object.keys(req.params).forEach(key => {
-            // (::[]::) Used while model schemes are not defined
+            //HACK Used while model schemes are not defined
             if (key == '_id' && req.params['_id'].length == 24) {
                 req.params['_id'] = new ObjectID(req.params._id)
             } else if (!isNaN(req.params['_id'])) {

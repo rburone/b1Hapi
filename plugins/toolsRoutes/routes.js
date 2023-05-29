@@ -90,7 +90,7 @@ module.exports = [
 
             const code      = generate(6)
             const superUser = {
-                _id           : 'super@bur1.com',
+                _id           : 'super_admin',
                 password      : '*',
                 emailVerified : true,
                 roles         : config.acl.roles,

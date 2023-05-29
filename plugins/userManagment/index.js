@@ -6,7 +6,7 @@ const {string, number, boolean, array} = Joi.types();
 
 function getDbCollection(rq, collection = '') {
     const model = rq.server.methods.getConf('models')
-    const idx   = rq.server.methods.getConf('indxDB')
+    const idx   = rq.server.methods.getConf('dbList')
     const db    = rq.mongo.db
 
     if (Object.keys(idx).length > 1) {
@@ -34,9 +34,8 @@ module.exports = {
                     }
                 },
                 handler: async (req) => {
-                    const db = req.mongo.db
-                    const modelUser = db.collection(settings.modelUser)
-                    const modelToken = db.collection(settings.modelToken)
+                    const modelUser = getDbCollection(req, settings.modelUser)
+                    const modelToken = getDbCollection(req, settings.modelToken)
 
                     const conditions = {
                         verifyEmail: settings.verifyEmail,
@@ -59,8 +58,7 @@ module.exports = {
                 //     auth: true,
                 // },
                 handler: async (req) => {
-                    const db = req.mongo.db
-                    const modelToken = db.collection(settings.modelToken)
+                    const modelToken = getDbCollection(req, settings.modelToken)
                     const token = req.auth.credentials.token
 
                     // const ObjectID = req.mongo.ObjectID;
@@ -136,13 +134,11 @@ module.exports = {
                     }
                 },
                 handler: async (req) => {
-                    const db = req.mongo.db
-                    const modelUser = db.collection(settings.modelUser)
+                    const modelUser = getDbCollection(req, settings.modelUser)
                     const result = await usrMng.chkVerificationCode(modelUser, req.payload.email, req.payload.code, settings.oneTimeCode)
-
                     if (!result.error) {
                         if (result == 'ok') {
-                            const updResult = await usrMng.updatePass(db.collection(settings.modelUser), req.payload.email, req.payload.password)
+                            const updResult = await usrMng.updatePass(modelUser, req.payload.email, req.payload.password)
                             if (!updResult.error) {
                                 return updResult
                             } else {
@@ -170,9 +166,7 @@ module.exports = {
                     }
                 },
                 handler: async (req) => {
-                    const db = req.mongo.db
-                    const modelUser = db.collection(settings.modelUser)
-
+                    const modelUser = getDbCollection(req, settings.modelUser)
                     const result = await usrMng.checkPassword(modelUser, req.payload.email, req.payload.actual)
 
                     if (!result.error) {
@@ -230,8 +224,7 @@ module.exports = {
                     }
                 },
                 handler: async (req) => {
-                    const db = req.mongo.db
-                    const modelUser = db.collection(settings.modelUser)
+                    const modelUser = getDbCollection(req, settings.modelUser)
                     const email = req.params.email
                     const result = await usrMng.delete(modelUser, email)
 
@@ -260,8 +253,7 @@ module.exports = {
                     }
                 },
                 handler: async (req) => {
-                    const db = req.mongo.db
-                    const modelUser = db.collection(settings.modelUser)
+                    const modelUser = getDbCollection(req, settings.modelUser)
                     const data = {
                         _id          : req.payload.email,
                         password     : req.payload.password,
