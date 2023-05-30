@@ -171,18 +171,15 @@ module.exports = {
     /**
      * Insert new user
      * @param {object} userCollection
-     * @param {object} data
+     * @param {object} user
      * @returns object if ok or error object if not
      */
-    async create(userCollection, data) {
-        user.password = bcrypt.hashSync(data.password, 10);
-        user.validationCode = generate(data.lenVerifCode)
-
+    async create(userCollection, user) {
         try {
             const result = await userCollection.insertOne(user)
             return result
         } catch (error) {
-            return {error, from: '[lib:userMangment:create]'}
+            return {error, from: `[lib:userMangment:create:${user._id}]`}
         }
 
     },
@@ -195,14 +192,14 @@ module.exports = {
      */
     async delete(userCollection, _id) {
         try {
-            const result = await userCollection.deleteOne({_id})
+            const result = await userCollection.deleteOne({ _id })
             if (result.deletedCount == 1) {
                 return 'ok'
             } else {
                 return 'unchanged'
             }
         } catch (error) {
-            return {error, from: '[lib:userMangment:delete]'}
+            return {error, from: `[lib:userMangment:delete:${_id}]`}
         }
 
     },

@@ -1,6 +1,6 @@
 {
   "name": "b1hapi",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Simple Hapi framework implementation by Bur1",
   "repository": {
     "type": "git",

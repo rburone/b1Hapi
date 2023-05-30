@@ -1,8 +1,10 @@
 'use strict'
-const usrMng = require('./lib')
-const Joi    = require('joi')
+const usrMng       = require('./lib')
+const Joi          = require('joi')
+const bcrypt       = require('bcryptjs');
+const { generate } = require('../../lib/methods').b1Lib
 
-const {string, number, boolean, array} = Joi.types();
+const {string, array} = Joi.types();
 
 function getDbCollection(rq, collection = '') {
     const model = rq.server.methods.getConf('models')
@@ -254,15 +256,16 @@ module.exports = {
                 },
                 handler: async (req) => {
                     const modelUser = getDbCollection(req, settings.modelUser)
-                    const data = {
-                        _id          : req.payload.email,
-                        password     : req.payload.password,
-                        roles        : req.payload.roles,
-                        emailVerified: !settings.verifyEmail,
-                        lenVerifCode : settings.lenVerifCode
+                    const { email, password, roles } = req.payload
+                    const user = {
+                        _id           : email,
+                        password      : bcrypt.hashSync(password, 10),
+                        roles         : roles,
+                        validationCode: generate(settings.lenVerifCode),
+                        emailVerified : !settings.verifyEmail,
                     }
 
-                    const result = await usrMng.create(modelUser, data)
+                    const result = await usrMng.create(modelUser, user)
 
                     if (!result.error) {
                         if (settings.verifyEmail && settings.sendMails) {
@@ -281,9 +284,10 @@ module.exports = {
                                 return server.errManager(info)
                             }
                         }
+
                         return user.validationCode
                     } else {
-                        return server.errManager({error: result.error, from: `[plugin:userManagment:create]`})
+                        return server.errManager({error: result.error, from: `[plugin:userManagment:create:${email}]`})
                     }
                 }
             },
