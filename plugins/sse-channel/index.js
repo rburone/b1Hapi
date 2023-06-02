@@ -1,0 +1,1 @@
+const channels = require('./channels');

@@ -17,7 +17,7 @@ module.exports = {
     },
     security: {
         modelToken  : 'AccessToken',      // [R] Model with tokens data
-        modelUser   : 'Usuario',          // [R] Model with users data
+        modelUser   : 'User',             // [R] Model with users data
         // --------------------------------------------[ OPTIONAL ]
         // verifyEmail : false,           // [D] Is verification of email required?
         // ttl         : 1209600,         // [D] Token duration
