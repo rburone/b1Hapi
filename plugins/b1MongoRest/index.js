@@ -1,7 +1,7 @@
 'use strict'
 const Boom = require('@hapi/boom')
 const Joi  = require('joi')
-const C    = require('../../lib/color_codes')
+const log  = require('../../lib/console_helper')
 
 const validMethods = ['GET', 'PUT', 'POST', 'PATCH', 'DELETE']
 
@@ -79,8 +79,9 @@ function genSet(payload) {
 }
 
 function createRoute(modelData, permissions, definition, apiPATH, verbose, dbList) {
-    const { cmd, method, path } = definition
+    let { cmd, method, path }  = definition
     const { name, dataSource } = modelData
+
     const routerDef = {
         method,
         path: apiPATH + path.replace(':model', name),
@@ -107,12 +108,16 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
         const methodUC = method.toUpperCase()
         let   response = []
 
+        if (verbose) {
+            console.log(`Try [${methodUC}] ${cmd} in ${name}.`)
+        }
+
         if (methodUC == 'GET') {
             const { match, sort, projection } = genFilter(req, ObjectID)
 
-            // if (verbose) {
-            //     console.log(`Query: \n${JSON.stringify(match)}`)
-            // }
+            if (verbose) {
+                console.log(`Query: \n${JSON.stringify(match)}`)
+            }
 
             try {
                 const result = await db.collection(name)[cmd](match, projection)
@@ -137,41 +142,53 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
                 throw Boom.internal('Internal MongoDB error [GET]', error)
             }
 
-        } else if (methodUC == 'PATCH' || methodUC == 'PUT') {
-            if (req.payload) {
-                const { match } = genFilter(req, ObjectID)
-                const payload = methodUC == 'PATCH' ? genSet(req.payload) : req.payload
+        } else {
+            const payload = req.payload || null
+            if (payload) {
+                if (Array.isArray(payload)) { // -------- BULK OPERATION
+                    if (methodUC == 'POST') {
+                        try {
+                            const result = await db.collection(name).insertMany(payload, { ordered: false })
+                            return result
+                        } catch (err) {
+                            if (err.code == 11000) {
+                                log('warning', 'MongodDB', `Duplicate key`, '[b1MongoRest:POST]')
+                                throw Boom.conflict('Duplicate key', err)
+                            }
+                            throw Boom.badRequest(`Internal MongoDB error [${methodUC}]`)
+                        }
+                    } else {
+                        const upsert = methodUC == 'PUT'; // upsert if PUT
+                        const bulkOperations = []
+                        payload.forEach(document => {
+                            bulkOperations.push({
+                                replaceOne: {
+                                    filter: { _id: document._id }, // TODO Ver si no hay ID
+                                    replacement: document,
+                                    upsert,
+                                },
+                            });
+                        })
 
-                if (verbose) {
-                    console.log(`Try ${cmd} in ${name}.`)
-                    console.log(`Query: \n${JSON.stringify(match)}`)
-                    console.log('Payload: %s', JSON.stringify(payload))
-                }
-
-                try {
-                    const result = await db.collection(name)[cmd](match, payload)
-                    return result
-                }
-                catch (error) {
-                    throw Boom.internal(`Internal MongoDB error [${methodUC}]`, error)
+                        try {
+                            const result = await db.collection(name).bulkWrite(bulkOperations)
+                            return result
+                        } catch (error) {
+                            throw Boom.internal(`Internal MongoDB error [${methodUC}]`, error)
+                        }
+                    }
+                } else {
+                    const { match } = genFilter(req, ObjectID)
+                    payload = methodUC == 'PATCH' ? genSet(req.payload) : req.payload
+                    try {
+                        const result = await db.collection(name)[cmd](match, payload)
+                        return result
+                    } catch (error) {
+                        throw Boom.internal(`Internal MongoDB error [${methodUC}]`, error)
+                    }
                 }
             } else {
                 throw Boom.badRequest(`Internal MongoDB error [${methodUC}]`, 'No payload')
-            }
-        } else {
-            const payload = req.payload || null
-
-            if (verbose) {
-                console.log(`Try ${cmd} in ${name}.`)
-                console.log(`Query: \n${JSON.stringify(match)}`)
-            }
-
-            try {
-                const result = await db.collection(name)[cmd](payload).toArray()
-                return result
-            }
-            catch (err) {
-                throw Boom.internal('Internal MongoDB error', err)
             }
         }
     }

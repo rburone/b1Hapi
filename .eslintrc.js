@@ -111,10 +111,23 @@ module.exports = {
             }
         }],
         'keyword-spacing': 'error',
+
         'space-before-function-paren': ['warn', {
             'anonymous': 'always',
             'named': 'never',
             'asyncArrow': 'always'
+        }],
+
+        'spaced-comment': ['warn', 'always', {
+            'line': {
+                'markers': ['/', '*'],
+                'exceptions': ['=']
+            },
+            'block': {
+                'markers': ['/'],
+                'exceptions': ['*', '/'],
+                'balanced': false
+            }
         }],
 
         // https://astexplorer.net/

@@ -87,6 +87,8 @@ module.exports = [
         dataSource: 'mongodb4',
         actions   : [
             { name: 'search', permissions: [] },
+            { name: 'upsert', permissions: [] },
+            { name: 'create', permissions: [] },
         ]
     },
     {

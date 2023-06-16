@@ -2,6 +2,8 @@ http://localhost:3500/api
 ###
 http://localhost:3500/api/init_server
 ###
+http://localhost:3500/routes
+###
 POST http://localhost:3500/login HTTP/1.1
 content-type: application/json
 
@@ -44,3 +46,5 @@ GET http://localhost:3500/store/sub/test.gif
 GET http://localhost:3500/img/20,10
 ###
 GET http://localhost:3500/shell/hello.js
+###
+GET http://localhost:3500/db/resultado_ensayo?filter={"where":{"activo":"TP103397"}} HTTP/1.1
