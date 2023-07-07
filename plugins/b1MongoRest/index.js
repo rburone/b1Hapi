@@ -1,7 +1,8 @@
 'use strict'
 const Boom = require('@hapi/boom')
 const Joi  = require('joi')
-const log  = require('../../lib/console_helper')
+const log = require('../../lib/console_helper')
+const C = require('../../lib/color_codes')
 
 const validMethods = ['GET', 'PUT', 'POST', 'PATCH', 'DELETE']
 
@@ -143,7 +144,7 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
             }
 
         } else {
-            const payload = req.payload || null
+            let payload = req.payload || null
             if (payload) {
                 if (Array.isArray(payload)) { // -------- BULK OPERATION
                     if (methodUC == 'POST') {
@@ -181,7 +182,12 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
                     const { match } = genFilter(req, ObjectID)
                     payload = methodUC == 'PATCH' ? genSet(req.payload) : req.payload
                     try {
-                        const result = await db.collection(name)[cmd](match, payload)
+                        let result
+                        if (methodUC == 'POST') {
+                            result = await db.collection(name)[cmd](payload)
+                        } else {
+                            result = await db.collection(name)[cmd](match, payload)
+                        }
                         return result
                     } catch (error) {
                         throw Boom.internal(`Internal MongoDB error [${methodUC}]`, error)

@@ -6,29 +6,15 @@
 
 <body>
     <div class="card">
-        <div>
-            <h5>Email validation code:</h5>
-            <form id="form" action="<%= url %>">
-                <p>
-                    Email: <input class="link" id="email" type="text" value="<%= email %>" required />
-                    </br>
-                    Code: <input class="link" id="code" type="text" maxlength="<%= lengthcode %>" required />
-                </p>
-                <input class="action" type="submit" value="Verify">
-            </form>
-        </div>
+        <form id="form" action="<%= url %>">
+            <fieldset class="align-right">
+                <legend>&nbsp;Email validation code:&nbsp;</legend>
+                Email: <input class="link" type="text" name="email" required /></br>
+                Code: <input class="link" id="code" type="text" minlength="<%= lengthcode %>" required /></br>
+            </fieldset>
+            <input class="action" type="submit" label="Change">
+        </form>
     </div>
 </body>
 
 </html>
-<script>
-    const template = (email, code) => `/${email}/${code}`;
-
-    document.getElementById('form').addEventListener('submit', function (s) {
-        s.preventDefault();
-        const email = document.getElementById('email').value
-        const code = document.getElementById('code').value
-        this.action += template(email, code);
-        this.submit();
-    });
-</script>

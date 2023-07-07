@@ -5,8 +5,8 @@
     line-height: 1;
     font-size: 1.2rem;
     font-weight: 300;
-    width: 35vmin;
-    height: 25vmin;
+    width: auto;
+    height: auto;
     display: flex;
     place-items: center;
     text-align: center;
@@ -28,6 +28,10 @@
     padding: 1ch;
     border-radius: 1ch;
     flex-direction: column;
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
 }
 
 .card :first-child {
@@ -38,8 +42,12 @@
     margin-bottom: auto;
 }
 
+.card .align-right {
+    text-align: right;
+}
+
 .link {
-    margin-top: 25px;
+    margin-bottom: 20px;
     font-size: 14px;
     text-decoration: none;
     background-color: aliceblue;
@@ -47,6 +55,7 @@
     width: 200px;
     padding: 5px;
     border: 0px;
+    margin-top: 5px;
 }
 
 html {

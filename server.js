@@ -73,6 +73,7 @@ module.exports = {
                             emailVerificationCode  : config.views.emailVerificationCode,
                             formChkVerificationCode: config.views.formChkVerificationCode,
                             formChangePass         : config.views.formChangePass,
+                            formChgPassByCode      : config.views.formChgPassByCode,
                         }
                     },
                     { // hacli

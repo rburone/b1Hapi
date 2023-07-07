@@ -10,11 +10,11 @@
             <fieldset class="align-right">
                 <legend>&nbsp;Change password:&nbsp;</legend>
                 User: <input class="link" type="text" name="email" required /></br>
-                Current Password: <input class="link" type="password" name="actual" minlength="<%= passMinLen %>" required /></br>
-                New Password: <input id="password" class="link" type="password" name="new" minlength="<%= passMinLen %>" required /></br>
-                Retype Password: <input id="confirm_password" class="link" type="password" name="retype" minlength="<%= passMinLen %>" required /></br>
+                Code: <input class="link" name="code" type="text" minlength="<%= lengthcode %>" required /></br>
+                New Password: <input id="password" class="link" type="password" name="password" minlength="<%= passMinLen %>" required /></br>
+                Retype Password: <input id="confirm_password" class="link" type="password" minlength="<%= passMinLen %>" required /></br>
             </fieldset>
-            <input class="action" type="submit" label="Verify">
+            <input class="action" type="submit" label="Change">
         </form>
     </div>
 </body>

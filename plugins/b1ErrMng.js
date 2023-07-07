@@ -78,7 +78,7 @@ function manager({error, from}) {
             say('warning', 'DECPRECATED', 'Change STRING for ERROR', from)
             return genericError(null, error, from)
         case 'Error':
-                return genericError(error.code, error.message, from)
+            return genericError(error.code, error.message, from)
         case 'MongoServerError':
             say('warning', `MongoServer: ${error.code}`, error.codeName, from)
             return 'unchange'
@@ -86,7 +86,7 @@ function manager({error, from}) {
             say('error', 'MongoServer:', error.message, from)
             return Boom.internal()
         case 'TypeError':
-            say('error', 'Internal TypeError', error.message, from)
+            say('error', `Internal TypeError`, `[${error.code}] ${error.message}`, from)
             return Boom.internal()
         case 'ValidationError':
             say('error', 'Validation', error.message, from)

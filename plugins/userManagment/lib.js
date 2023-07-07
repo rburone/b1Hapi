@@ -133,7 +133,6 @@ module.exports = {
             }
 
             const result = await userCollection.updateOne({_id, validationCode}, {$set})
-
             if (result.modifiedCount == 1) {
                 return 'ok'
             } else {

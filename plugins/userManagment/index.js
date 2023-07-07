@@ -123,7 +123,7 @@ module.exports = {
                 }
             },
             { // Set a password if verification code is valid
-                method: 'PATCH',
+                method: 'POST',
                 path: '/setPassword',
                 options: {
                     auth: false,
@@ -155,7 +155,7 @@ module.exports = {
                 }
             },
             { // Change a password if actual password is valid
-                method: 'PATCH',
+                method: 'POST',
                 path: '/changePassword',
                 options: {
                     auth: settings.secureChange,
@@ -292,8 +292,8 @@ module.exports = {
                 }
             },
             { // Return validation code form
-                method: 'GET',
-                path: '/validationForm/{email?}',
+                method : 'GET',
+                path   : '/validationForm/{email?}',
                 options: {
                     auth: false,
                     validate: {
@@ -312,6 +312,31 @@ module.exports = {
                         return form
                     } catch (error) {
                         return server.errManager({error, from: `[plugin:userManagment:validationForm]`})
+                    }
+                }
+            },
+            { // Return change password with valid code form
+                method : 'GET',
+                path   : '/changePassCodeForm/{email?}',
+                options: {
+                    auth: false,
+                    validate: {
+                        params: Joi.object({
+                            email: string.email()
+                        })
+                    }
+                },
+                handler: async (req) => {
+                    try {
+                        const form = await server.render(settings.formChgPassByCode, {
+                            passMinLen: settings.passMinLen,
+                            lengthcode: settings.lenVerifCode,
+                            url       : `${settings.path}/setPassword`,
+                            email     : req.params.email
+                        });
+                        return form
+                    } catch (error) {
+                        return server.errManager({ error, from: `[plugin:userManagment:changePassCodeForm]` })
                     }
                 }
             },
