@@ -51,10 +51,10 @@ module.exports = {
         ]
     },
     views: {
-        // emailVerificationCode  : 'email_code',              // [D] Email to send verification code to new user
-        // formChkVerificationCode: 'form_verify_code',        // [D] HTML form for check and validate code
-        // formChangePass         : 'form_change_pass',        // [D] HTML form for password change with actual pass
-        // formChgPassByCode      : 'form_code_change_pass',   // [D] HTML form for password change with valid code
+        // emailVerificationCode  : 'email_code',       // [D] Email to send verification code to new user
+        // formChkVerificationCode: 'form_verify_code', // [D] HTML form for check and validate code
+        formChangePass    : 'form_change_pass_ES',      // [D] HTML form for password change with actual pass
+        formChgPassByCode : 'form_code_change_pass_ES'  // [D] HTML form for password change with valid code
     }
 }
 // -------- Reference

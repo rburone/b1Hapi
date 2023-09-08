@@ -48,3 +48,5 @@ GET http://localhost:3500/img/20,10
 GET http://localhost:3500/shell/hello.js
 ###
 GET http://localhost:3500/db/resultado_ensayo?filter={"where":{"activo":"TP103397"}} HTTP/1.1
+###
+GET http://localhost:3500/User?access_token=ee2158f9401b9a52f806ae61db98dfd6b93946b53cd15b6c5ba57aab738e321230f33a01afc8d676a961fd903120672c HTTP/1.1

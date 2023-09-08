@@ -13,6 +13,21 @@ const { string, boolean, array } = Joi.types();
 
 module.exports = [
     {
+        method: 'POST',
+        path: '',
+        options: {
+            auth: false,
+            // payload: {
+            //     allow: 'application/json',
+            //     parse: true
+            // },
+        },
+        handler: function (req) {
+            console.log(req.payload.data);
+            return 'Bur1 Hapi\'s Server Test';
+        }
+    },
+    {
         method : 'GET',
         path   : '',
         options: {

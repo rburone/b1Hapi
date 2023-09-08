@@ -27,24 +27,28 @@ module.exports = {
      * @param {Boolean} verifyEmail If required verify email
      * @returns String/Boolean access token or false
      */
-    async checkUser(userCollection, tokenCollection, payload, {verifyEmail , ttl}) {
-        try {
-            const result = await userCollection.findOne({_id: payload.email})
-            if (result) {
-                if (bcrypt.compareSync(payload.password, result.password)) {
-                    if (verifyEmail && !result.emailVerified) {
-                        return 'Email not verified'
+    async checkUser(userCollection, tokenCollection, payload, { verifyEmail, ttl }) {
+        if (userCollection && tokenCollection) { // TODO [20/07/2023] Ver como mejorar la deteccion de mala configuraricón de los modelos
+            try {
+                const result = await userCollection.findOne({ _id: payload.email })
+                if (result) {
+                    if (bcrypt.compareSync(payload.password, result.password)) {
+                        if (verifyEmail && !result.emailVerified) {
+                            return 'Email not verified'
+                        } else {
+                            return await saveToken(tokenCollection, result._id, ttl);
+                        }
                     } else {
-                        return await saveToken(tokenCollection, result._id, ttl);
+                        return { error: 401 }
                     }
                 } else {
-                    return {error: 401}
+                    return { error: 404 }
                 }
-            } else {
-                return {error: 404}
+            } catch (error) {
+                return { error, from: '[lib:userMangment:checkUser]' }
             }
-        } catch (error) {
-            return {error, from: '[lib:userMangment:checkUser]'}
+        } else {
+            return { error: `Non exists ${collection}`, from: '[plugin:userManagment:getDbCollection]' }
         }
     },
 
@@ -227,4 +231,12 @@ module.exports = {
             return {error, from: '[lib:userMangment:update]'}
         }
     },
+    async find(userCollection) {
+        try {
+            const result = await userCollection.find().toArray()
+            return result
+        } catch (error) {
+            return { error, from: `[lib:userMangment:find]` }
+        }
+    }
 }
