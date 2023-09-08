@@ -2,7 +2,7 @@
 const Boom         = require('@hapi/boom')
 const { generate } = require('../../lib/methods').b1Lib
 const Joi          = require('joi')
-const C = require('../../lib/color_codes')
+const C            = require('../../lib/color_codes')
 
 const { string, boolean, array } = Joi.types();
 

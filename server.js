@@ -80,7 +80,7 @@ module.exports = {
                         plugin : require('@antoniogiordano/hacli'),
                         options: {}
                     },
-                    {
+                    { // disinfect
                         plugin : require('disinfect'),
                         options: {
                             disinfectQuery  : true,
@@ -88,16 +88,16 @@ module.exports = {
                             disinfectPayload: true
                         }
                     },
-                    {
+                    { // b1csvfy
                         plugin: require('./plugins/b1csvfy')
                     },
-                    {
+                    { // tools routes
                         plugin : require('./plugins/toolsRoutes'),
                         options: {
                             path: config.server.toolsAPI,
                         },
                     },
-                    {
+                    { // file sotorage
                         plugin : require('./plugins/b1FileStorage'),
                         options: {
                             path      : '/store',
