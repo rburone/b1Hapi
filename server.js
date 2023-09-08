@@ -59,7 +59,8 @@ module.exports = {
                         options: {
                             modelUser              : config.security.modelUser,
                             modelToken             : config.security.modelToken,
-                            path                   : config.server.userAPI,
+                            path                   : config.security.pathAPI,
+                            connection             : config.security.connection,
                             passMinLen             : config.security.passMinLen,
                             verifyEmail            : config.security.verifyEmail,
                             ttl                    : config.security.ttl,

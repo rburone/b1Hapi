@@ -103,6 +103,7 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
     }
 
     routerDef.handler = async (req) => {
+        console.log(req.payload);
         const idxDB    = dbList[dataSource]
         const db       = Array.isArray(req.mongo.db) ? req.mongo.db[idxDB] : req.mongo.db
         const ObjectID = req.mongo.ObjectID;
@@ -160,6 +161,7 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
                         }
                     } else {
                         const upsert = methodUC == 'PUT'; // upsert if PUT
+                        console.log(payload[0]);
                         const bulkOperations = []
                         payload.forEach(document => {
                             bulkOperations.push({
@@ -184,12 +186,15 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
                     try {
                         let result
                         if (methodUC == 'POST') {
+                            console.log(payload);
                             result = await db.collection(name)[cmd](payload)
+                            console.log(result);
                         } else {
                             result = await db.collection(name)[cmd](match, payload)
                         }
                         return result
                     } catch (error) {
+                        console.log(error);
                         throw Boom.internal(`Internal MongoDB error [${methodUC}]`, error)
                     }
                 }

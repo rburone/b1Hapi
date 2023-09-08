@@ -3,24 +3,6 @@
 
 module.exports = [
     {
-        name      : 'User',
-        dataSource: 'mongodb4',
-        actions   : [
-            { name: 'search', permissions: ['ADMIN'] },
-            { name: 'findID', permissions: ['ADMIN'] },
-            { name: 'updateID', permissions: ['ADMIN'] },
-        ]
-    },
-    {
-        name      : 'Usuario',
-        dataSource: 'mongoDev',
-        actions   : [
-            { name: 'search', permissions: ['ADMIN'] },
-            { name: 'findID', permissions: ['ADMIN'] },
-            { name: 'updateID', permissions: ['ADMIN'] },
-        ]
-    },
-    {
         name      : 'lugar',
         dataSource: 'mongodb4',
         actions   : [
@@ -99,6 +81,13 @@ module.exports = [
         ]
     },
     {
+        name      : 'Activos_count',
+        dataSource: 'mongodb4',
+        actions   : [
+            { name: 'search', permissions: [] },
+        ]
+    },
+    {
         name      : 'trafosP',
         dataSource: 'mongodb4',
         actions   : [
@@ -139,6 +128,26 @@ module.exports = [
         actions   : [
             { name: 'search', permissions: [] },
             { name: 'upsert', permissions: [] },
+        ]
+    },
+    {
+        name      : 'OTs',
+        dataSource: 'mongodb4',
+        actions   : [
+            { name: 'search', permissions: [] },
+            { name: 'upsert', permissions: [] },
+            { name: 'create', permissions: [] },
+            { name: 'updateID', permissions: [] },
+        ]
+    },
+    {
+        name: 'Persona',
+        dataSource: 'mongodb4',
+        actions: [
+            { name: 'search', permissions: [] },
+            { name: 'upsert', permissions: [] },
+            { name: 'create', permissions: [] },
+            { name: 'updateID', permissions: [] },
         ]
     },
     {

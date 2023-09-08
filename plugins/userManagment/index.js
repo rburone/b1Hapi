@@ -4,15 +4,14 @@ const Joi          = require('joi')
 const bcrypt       = require('bcryptjs');
 const { generate } = require('../../lib/methods').b1Lib
 
-const {string, array} = Joi.types();
+const { string, array } = Joi.types();
 
-function getDbCollection(rq, collection = '') {
-    const model = rq.server.methods.getConf('models')
-    const idx   = rq.server.methods.getConf('dbList')
-    const db    = rq.mongo.db
+function getDbCollection(rq, connection = '', collection = '') {
+    const idx = rq.server.methods.getConf('dbList')
+    const db  = rq.mongo.db
 
     if (Object.keys(idx).length > 1) {
-        const conNumer = idx[model[collection].dataSource]
+        const conNumer = idx[connection]
         return db[conNumer].collection(collection)
     } else {
         return db.collection(collection)
@@ -24,10 +23,10 @@ module.exports = {
     register(server, settings) {
         const routes = [
             { // LOGIN user
-                method: 'POST',
-                path: '/login',
+                method : 'POST',
+                path   : '/login',
                 options: {
-                    auth: false,
+                    auth    : false,
                     validate: {
                         payload: Joi.object({
                             email   : string.email().required(),
@@ -36,8 +35,8 @@ module.exports = {
                     }
                 },
                 handler: async (req) => {
-                    const modelUser = getDbCollection(req, settings.modelUser)
-                    const modelToken = getDbCollection(req, settings.modelToken)
+                    const modelUser  = getDbCollection(req, settings.connection, settings.modelUser)
+                    const modelToken = getDbCollection(req, settings.connection, settings.modelToken)
 
                     const conditions = {
                         verifyEmail: settings.verifyEmail,
@@ -46,7 +45,7 @@ module.exports = {
 
                     const result = await usrMng.checkUser(modelUser, modelToken, req.payload, conditions)
                     if (!result.error) {
-                        delete result.code // Delete validation code from response
+                        delete result.code  // Delete validation code from response
                         return result
                     } else {
                         return server.errManager({error: result.error, from: `[plugin:userManagment:login]`})
@@ -55,15 +54,15 @@ module.exports = {
             },
             { // LOGOUT user
                 method: 'GET',
-                path: '/logout',
-                // options: {
-                //     auth: true,
-                // },
+                path  : '/logout',
+                  // options: {
+                  //     auth: true,
+                  // },
                 handler: async (req) => {
                     const modelToken = getDbCollection(req, settings.modelToken)
-                    const token = req.auth.credentials.token
+                    const token      = req.auth.credentials.token
 
-                    // const ObjectID = req.mongo.ObjectID;
+                      // const ObjectID = req.mongo.ObjectID;
                     const result = await usrMng.revokeToken(modelToken, token)
                     if (!result.error) {
                         return result
@@ -73,10 +72,10 @@ module.exports = {
                 }
             },
             { // Set and send random verification code
-                method: 'GET',
-                path: '/sendCode/{email}',
+                method : 'GET',
+                path   : '/sendCode/{email}',
                 options: {
-                    auth: false,
+                    auth    : false,
                     validate: {
                         params: Joi.object({
                             email: string.email().required()
@@ -84,9 +83,9 @@ module.exports = {
                     }
                 },
                 handler: async (req) => {
-                    const db = req.mongo.db
+                    const db        = req.mongo.db
                     const modelUser = db.collection(settings.modelUser)
-                    const data = {
+                    const data      = {
                         email       : req.params.email,
                         lenVerifCode: settings.lenVerifCode
                     }
@@ -123,10 +122,10 @@ module.exports = {
                 }
             },
             { // Set a password if verification code is valid
-                method: 'POST',
-                path: '/setPassword',
+                method : 'POST',
+                path   : '/setPassword',
                 options: {
-                    auth: false,
+                    auth    : false,
                     validate: {
                         payload: Joi.object({
                             email   : string.email().required(),
@@ -136,8 +135,8 @@ module.exports = {
                     }
                 },
                 handler: async (req) => {
-                    const modelUser = getDbCollection(req, settings.modelUser)
-                    const result = await usrMng.chkVerificationCode(modelUser, req.payload.email, req.payload.code, settings.oneTimeCode)
+                    const modelUser = getDbCollection(req, settings.connection, settings.modelUser)
+                    const result    = await usrMng.chkVerificationCode(modelUser, req.payload.email, req.payload.code, settings.oneTimeCode)
                     if (!result.error) {
                         if (result == 'ok') {
                             const updResult = await usrMng.updatePass(modelUser, req.payload.email, req.payload.password)
@@ -155,10 +154,10 @@ module.exports = {
                 }
             },
             { // Change a password if actual password is valid
-                method: 'POST',
-                path: '/changePassword',
+                method : 'POST',
+                path   : '/changePassword',
                 options: {
-                    auth: settings.secureChange,
+                    auth    : settings.secureChange,
                     validate: {
                         payload: Joi.object({
                             email : string.email().required(),
@@ -168,8 +167,8 @@ module.exports = {
                     }
                 },
                 handler: async (req) => {
-                    const modelUser = getDbCollection(req, settings.modelUser)
-                    const result = await usrMng.checkPassword(modelUser, req.payload.email, req.payload.actual)
+                    const modelUser = getDbCollection(req, settings.connection, settings.modelUser)
+                    const result    = await usrMng.checkPassword(modelUser, req.payload.email, req.payload.actual)
 
                     if (!result.error) {
                         if (result == 'ok') {
@@ -188,10 +187,10 @@ module.exports = {
                 }
             },
             { // Check if is valid the verification code for user
-                method: 'GET',
-                path: '/chkCode/{email}/{code}',
+                method : 'GET',
+                path   : '/chkCode/{email}/{code}',
                 options: {
-                    auth: false,
+                    auth    : false,
                     validate: {
                         params: Joi.object({
                             email: string.email().required(),
@@ -200,19 +199,19 @@ module.exports = {
                     }
                 },
                 handler: async (req) => {
-                    const modelUser = getDbCollection(req, settings.modelUser)
-                    const result = await usrMng.chkVerificationCode(modelUser, req.params.email, req.params.code)
+                    const modelUser = getDbCollection(req, settings.connection, settings.modelUser)
+                    const result    = await usrMng.chkVerificationCode(modelUser, req.params.email, req.params.code)
 
                     if (!result.error) {
-                        return (result == 'ok') ? 'ok' : 'invalid'
+                        return (result == 'ok') ? 'ok': 'invalid'
                     } else {
                         return server.errManager({error: result.error, from: `[plugin:userManagment:chkCode]`})
                     }
                 }
             },
             { // Delete user
-                method: 'DELETE',
-                path: '/{email}',
+                method : 'DELETE',
+                path   : '/{email}',
                 options: {
                     validate: {
                         params: Joi.object({
@@ -226,9 +225,9 @@ module.exports = {
                     }
                 },
                 handler: async (req) => {
-                    const modelUser = getDbCollection(req, settings.modelUser)
-                    const email = req.params.email
-                    const result = await usrMng.delete(modelUser, email)
+                    const modelUser = getDbCollection(req, settings.connection, settings.modelUser)
+                    const email     = req.params.email
+                    const result    = await usrMng.delete(modelUser, email)
 
                     if (!result.error) {
                         return result
@@ -238,8 +237,8 @@ module.exports = {
                 }
             },
             { // Create a new user
-                method: 'POST',
-                path: '/user',
+                method : 'POST',
+                path   : '',
                 options: {
                     validate: {
                         payload: Joi.object({
@@ -255,9 +254,9 @@ module.exports = {
                     }
                 },
                 handler: async (req) => {
-                    const modelUser = getDbCollection(req, settings.modelUser)
+                    const modelUser                  = getDbCollection(req, settings.connection, settings.modelUser)
                     const { email, password, roles } = req.payload
-                    const user = {
+                    const user                       = {
                         _id           : email,
                         password      : bcrypt.hashSync(password, 10),
                         roles         : roles,
@@ -295,7 +294,7 @@ module.exports = {
                 method : 'GET',
                 path   : '/validationForm/{email?}',
                 options: {
-                    auth: false,
+                    auth    : false,
                     validate: {
                         params: Joi.object({
                             email: string.email()
@@ -319,7 +318,7 @@ module.exports = {
                 method : 'GET',
                 path   : '/changePassCodeForm/{email?}',
                 options: {
-                    auth: false,
+                    auth    : false,
                     validate: {
                         params: Joi.object({
                             email: string.email()
@@ -341,10 +340,10 @@ module.exports = {
                 }
             },
             { // Return change password form
-                method: 'GET',
-                path: '/changePassForm',
+                method : 'GET',
+                path   : '/changePassForm',
                 options: {
-                    auth: settings.secureChange, // If need to be logged in to change the password
+                    auth: settings.secureChange,   // If need to be logged in to change the password
                 },
                 handler: async (req) => {
                     try {
@@ -359,8 +358,8 @@ module.exports = {
                 }
             },
             { // Set/unset roles to user
-                method: 'PATCH',
-                path: '/roles',
+                method : 'PATCH',
+                path   : '/roles',
                 options: {
                     validate: {
                         payload: Joi.object({
@@ -375,8 +374,7 @@ module.exports = {
                     }
                 },
                 handler: async (req) => {
-                    const db = req.mongo.db
-                    const modelUser = db.collection(settings.modelUser)
+                    const modelUser = getDbCollection(req, settings.connection, settings.modelUser)
 
                     const userData = {
                         _id  : req.payload.email,
@@ -396,10 +394,30 @@ module.exports = {
                     }
                 }
             },
+            { // LIST of users
+                method : 'GET',
+                path   : '',
+                options: {
+                    auth: false,
+                      // validate: {
+                      //     payload: Joi.object({
+                      //         email: string.email().required(),
+                      //         password: string.min(settings.passMinLen).required(),
+                      //     })
+                      // }
+                },
+                handler: async (req) => {
+                    const modelUser = getDbCollection(req, settings.connection, settings.modelUser)
+                    const filter = {}
+
+                    const result = await usrMng.find()
+                    return result
+                }
+            }
         ]
 
         routes.forEach(route => {
-            route.path = `${settings.path}${route.path}`
+            route.path = `/${settings.path}${route.path}`
         })
 
         server.createRoute(routes)
