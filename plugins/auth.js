@@ -1,5 +1,5 @@
 'use strict'
-/******************************************************
+  /******************************************************
 * auth.js
 * Plugin for authorizartion using accesstoken
 * Autor: Ricardo D. Burone <rdburone@gmail.com>
@@ -7,7 +7,7 @@
 * Check duration of accesstoken
 */
 const AuthBearer = require('hapi-auth-bearer-token');
-const Joi = require('joi')
+const Joi        = require('joi')
 
 async function checkToken(token, req, modelToken, modelUser) {
     try {
@@ -19,16 +19,16 @@ async function checkToken(token, req, modelToken, modelUser) {
             },
             {
                 $lookup: {
-                    'from': modelUser,
-                    'localField': 'userId',
+                    'from'        : modelUser,
+                    'localField'  : 'userId',
                     'foreignField': '_id',
-                    'as': 'user'
+                    'as'          : 'user'
                 }
             },
             {
                 $project: {
-                    roles: {$arrayElemAt: ['$user.roles', 0]},
-                    ttl: 1,
+                    roles  : {$arrayElemAt: ['$user.roles', 0]},
+                    ttl    : 1,
                     created: 1
                 }
             },
@@ -38,7 +38,7 @@ async function checkToken(token, req, modelToken, modelUser) {
 
         if (result) {
             const created = new Date(result.created)
-            const diff = Math.round((new Date() - created) / 1000)
+            const diff    = Math.round((new Date() - created) / 1000)
             const isValid = diff <= result.ttl
 
             return {isValid, permissions: result.roles}
@@ -63,10 +63,10 @@ module.exports = {
         await server.register(AuthBearer)
         server.auth.strategy('simple', 'bearer-access-token', {
             allowQueryToken: true,
-            validate: async (req, token/*, h*/) => {
-                const check = await checkToken(token, req, options.modelToken, options.modelUser)
-                const credentials = {token, permissions: check.permissions}; // 👨‍💻 Used by ACL system
-                // const artifacts = {test: 'info'};
+            validate       : async (req, token/*, h*/) => {
+                const check       = await checkToken(token, req, options.modelToken, options.modelUser)
+                const credentials = {token, permissions: check.permissions};                             // 👨‍💻 Used by ACL system
+                  // const artifacts = {test: 'info'};
                 return {isValid: check.isValid, credentials/*, artifacts*/};
             }
         });

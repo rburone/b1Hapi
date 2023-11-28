@@ -1,5 +1,8 @@
-  // Permissions with ['*'] any rol but needs authentication
-  // Permissions with [] not need authentication
+// Permissions with ['*'] any rol but needs authentication
+// Permissions with [] not need authentication
+
+const Joi = require('joi');
+const { string, boolean, array, number, date, any } = Joi.types();
 
 module.exports = [
     {
@@ -131,6 +134,14 @@ module.exports = [
         ]
     },
     {
+        name      : 'planesTrabajo',
+        dataSource: 'mongodb4',
+        actions   : [
+            { name: 'search', permissions: [] },
+            { name: 'upsert', permissions: [] },
+        ]
+    },
+    {
         name      : 'OTs',
         dataSource: 'mongodb4',
         actions   : [
@@ -139,6 +150,47 @@ module.exports = [
             { name: 'create', permissions: [] },
             { name: 'updateID', permissions: [] },
         ]
+    },
+    {
+        name: 'repo-horas',
+        dataSource: 'mongodb4',
+        actions: [
+            { name: 'search', permissions: [] },
+            { name: 'upsert', permissions: [] },
+            { name: 'create', permissions: [] },
+            { name: 'updateID', permissions: [] },
+        ],
+        schema: Joi.object({
+            _id           : string.required(),
+            ot            : string.required(),
+            fecha         : date.required(),
+            dia           : number.min(1).max(31).required(),
+            mes           : number.min(1).max(12).required(),
+            anio          : number.integer().required(),
+            tipoOt        : string.uppercase().valid(...['MP', 'MONTAJE', 'NO_PROGRAMADO', 'NOVEDAD', 'EMERGENCIA', 'CAPACITACION', 'EXTERNO']).required(),
+            idrh          : string.required(),
+            apellidoNombre: string.required(),
+            minIni        : number.required(),
+            minFin        : number.required(),
+            jornada       : number.required(),
+            tarea         : string,
+            localizacion  : string.required(),
+            zona          : string.required(),
+            NH            : boolean.required(),
+            min50         : number.integer().required(),
+            min100        : number.integer().required(),
+            min100n       : number.integer().required(),
+            minC          : number.integer().required(),
+            minT          : number.integer().required(),
+            franco        : any.allow(1, false),
+            sectorId      : string.required(),
+            maxIni        : number.integer().required(),
+            maxFin        : number.integer().required(),
+            idx           : string.required(),
+            tieneExtra    : boolean.required(),
+            // sector        : string.required(),
+            // gerencia      : string.required(),
+        })
     },
     {
         name: 'Persona',

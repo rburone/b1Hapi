@@ -1,8 +1,9 @@
 'use strict'
 const Boom = require('@hapi/boom')
 const Joi  = require('joi')
-const log = require('../../lib/console_helper')
-const C = require('../../lib/color_codes')
+const log  = require('../../lib/console_helper')
+const C    = require('../../lib/color_codes')
+const { validate } = require('../../lib/methods').b1Lib
 
 const validMethods = ['GET', 'PUT', 'POST', 'PATCH', 'DELETE']
 
@@ -22,19 +23,20 @@ const ACLSchema = Joi.object({
 })
 
 const ModelSchema = Joi.object({
-    name: string.required(),
+    name      : string.required(),
     dataSource: string.required(),
-    actions: array.items(ACLSchema).required()
+    actions   : array.items(ACLSchema).required(),
+    schema    : Joi.object()
 })
 
 const OptionsSchema = Joi.object({
     api: {
         routes: array.items(RouteSchema).required(),
-        model: array.items(ModelSchema).required()
+        model : array.items(ModelSchema).required()
     },
-    path: string.allow('').required(),
+    path   : string.allow('').required(),
     verbose: boolean,
-    dbList: Joi.object()
+    dbList : Joi.object()
 })
 
 function genFilter(req, ObjectID) {
@@ -83,6 +85,8 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
     let { cmd, method, path }  = definition
     const { name, dataSource } = modelData
 
+    const schema = modelData.schema ? modelData.schema : false
+
     const routerDef = {
         method,
         path: apiPATH + path.replace(':model', name),
@@ -103,7 +107,6 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
     }
 
     routerDef.handler = async (req) => {
-        console.log(req.payload);
         const idxDB    = dbList[dataSource]
         const db       = Array.isArray(req.mongo.db) ? req.mongo.db[idxDB] : req.mongo.db
         const ObjectID = req.mongo.ObjectID;
@@ -111,7 +114,7 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
         let   response = []
 
         if (verbose) {
-            console.log(`Try [${methodUC}] ${cmd} in ${name}.`)
+            console.log(`Try ${methodUC} in ${name}.`)
         }
 
         if (methodUC == 'GET') {
@@ -143,63 +146,73 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
             } catch (error) {
                 throw Boom.internal('Internal MongoDB error [GET]', error)
             }
-
         } else {
             let payload = req.payload || null
             if (payload) {
                 if (Array.isArray(payload)) { // -------- BULK OPERATION
-                    if (methodUC == 'POST') {
-                        try {
-                            const result = await db.collection(name).insertMany(payload, { ordered: false })
-                            return result
-                        } catch (err) {
-                            if (err.code == 11000) {
-                                log('warning', 'MongodDB', `Duplicate key`, '[b1MongoRest:POST]')
-                                throw Boom.conflict('Duplicate key', err)
+                    if (payload.length > 0) {
+                        for (let i = 0; i < payload.length; i++) {
+                            const ele = validate(payload[i], schema)
+                            payload[i] = ele
+                        }
+                        if (methodUC == 'POST') {
+                            try {
+                                const result = await db.collection(name).insertMany(payload, { ordered: false })
+                                if (verbose) console.log(`Payload size: ${payload.length}`);
+                                return result
+                            } catch (err) {
+                                if (err.code == 11000) {
+                                    log('warning', 'MongodDB', `Duplicate key`, '[b1MongoRest:POST]')
+                                    throw Boom.conflict('Duplicate key', err)
+                                }
+                                throw Boom.badRequest(`Internal MongoDB error [${methodUC}]`)
                             }
-                            throw Boom.badRequest(`Internal MongoDB error [${methodUC}]`)
+                        } else {
+                            const upsert = methodUC == 'PUT'; // upsert if PUT
+                            const bulkOperations = []
+                            payload.forEach(document => {
+                                bulkOperations.push({
+                                    replaceOne: {
+                                        filter: { _id: document._id }, // TODO Ver si no hay ID
+                                        replacement: document,
+                                        upsert,
+                                    },
+                                });
+                            })
+
+                            try {
+                                if (verbose) console.log(`Payload size: ${payload.length} ${bulkOperations.length}`);
+                                const result = await db.collection(name).bulkWrite(bulkOperations)
+                                // if (verbose) console.log(result);
+                                return result
+                            } catch (error) {
+                                console.log(error);
+                                throw Boom.internal(`Internal MongoDB error [${methodUC}]`, error)
+                            }
                         }
                     } else {
-                        const upsert = methodUC == 'PUT'; // upsert if PUT
-                        console.log(payload[0]);
-                        const bulkOperations = []
-                        payload.forEach(document => {
-                            bulkOperations.push({
-                                replaceOne: {
-                                    filter: { _id: document._id }, // TODO Ver si no hay ID
-                                    replacement: document,
-                                    upsert,
-                                },
-                            });
-                        })
-
+                        throw Boom.badRequest(`Internal MongoDB error [${methodUC}] empty payload`, 'Empty payload')
+                    }
+                } else {
+                    const { match } = genFilter(req, ObjectID)
+                    console.table(validate(payload))
+                        payload = methodUC == 'PATCH' ? genSet(req.payload) : req.payload
                         try {
-                            const result = await db.collection(name).bulkWrite(bulkOperations)
+                            let result
+                            if (methodUC == 'POST') {
+                                console.log(payload);
+                                result = await db.collection(name)[cmd](payload)
+                                console.log(result);
+                            } else {
+                                result = await db.collection(name)[cmd](match, payload)
+                            }
                             return result
                         } catch (error) {
                             throw Boom.internal(`Internal MongoDB error [${methodUC}]`, error)
                         }
-                    }
-                } else {
-                    const { match } = genFilter(req, ObjectID)
-                    payload = methodUC == 'PATCH' ? genSet(req.payload) : req.payload
-                    try {
-                        let result
-                        if (methodUC == 'POST') {
-                            console.log(payload);
-                            result = await db.collection(name)[cmd](payload)
-                            console.log(result);
-                        } else {
-                            result = await db.collection(name)[cmd](match, payload)
-                        }
-                        return result
-                    } catch (error) {
-                        console.log(error);
-                        throw Boom.internal(`Internal MongoDB error [${methodUC}]`, error)
-                    }
                 }
             } else {
-                throw Boom.badRequest(`Internal MongoDB error [${methodUC}]`, 'No payload')
+                throw Boom.badRequest(`Internal MongoDB error [${methodUC}] expected payload not found`, 'No payload')
             }
         }
     }
@@ -225,8 +238,8 @@ module.exports = {
                     const route = createRoute(modelData, ACLDef.permissions, defRoute, apiPATH, verbose, dbList)
                     server.createRoute(route)
                 } else {
-                    const error = new Error(`No exists \x1b[1m${ACLDef.name}\x1b[0m named route`)
-                    error.code = 'NOCRITICAL'
+                    const error      = new Error(`No exists \x1b[1m${ACLDef.name}\x1b[0m named route`)
+                          error.code = 'NOCRITICAL'
                     server.errManager({ error, from: `[plugin:b1MongoRest:routesDefinitionCreation]` })
                 }
             })
