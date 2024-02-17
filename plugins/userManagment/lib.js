@@ -234,7 +234,23 @@ module.exports = {
     async find(userCollection) {
         try {
             const result = await userCollection.find().toArray()
-            return result
+            const out = result.map(u => {
+                u.password = '*'
+                return u
+            })
+            return out
+        } catch (error) {
+            return { error, from: `[lib:userMangment:find]` }
+        }
+    },
+    async rolList(userCollection) {
+        try {
+            const result = await userCollection.find().toArray()
+            const out = result.map(u => {
+                u.password = '*'
+                return u
+            })
+            return out
         } catch (error) {
             return { error, from: `[lib:userMangment:find]` }
         }

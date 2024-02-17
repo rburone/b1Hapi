@@ -4,8 +4,13 @@
 const Joi = require('joi');
 const { string, boolean, array, number, date, any } = Joi.types();
 
+const TIPO_OT     = ['MP', 'MONTAJE', 'NO_PROGRAMADO', 'NOVEDAD', 'EMERGENCIA', 'CAPACITACION', 'EXTERNO']
+const STATUS      = ['EAPROB', 'ASIGN', 'APROB', 'ING_MTO', 'EMTRL', 'EPROG', 'PROG_MTO', 'PROG_OP', 'ENPRG', 'RECHAZADA', 'COMP', 'CAN', 'CERR', 'ENVIADA']
+const VAL_MEDIDAS = ['NO DETECTADO', 'PRESENCIA', 'LEVE PRESENCIA']
+const STATUSPLAN  = ['ACTIVO', 'INACTIVO', 'REVISADO']
+
 module.exports = [
-    {
+    { // name
         name      : 'lugar',
         dataSource: 'mongodb4',
         actions   : [
@@ -14,7 +19,7 @@ module.exports = [
             { name: 'updateID', permissions: ['USER'] },
         ]
     },
-    {
+    { // activo_lineal
         name      : 'activo_lineal',
         dataSource: 'mongodb4',
         actions   : [
@@ -60,7 +65,7 @@ module.exports = [
             { name: 'create', permissions: ['USER'] },
         ]
     },
-    {
+    { // resultado_ensayo
         name      : 'resultado_ensayo',
         dataSource: 'mongodb4',
         actions   : [
@@ -72,68 +77,110 @@ module.exports = [
         dataSource: 'mongodb4',
         actions   : [
             { name: 'search', permissions: [] },
-            { name: 'upsert', permissions: [] },
-            { name: 'create', permissions: [] },
+            { name: 'upsert', permissions: ['USER'] },
+            { name: 'create', permissions: ['USER'] },
         ]
     },
-    {
+    { // ensayo
+        name      : 'ensayo',
+        dataSource: 'mongodb4',
+        actions   : [
+            { name: 'search', permissions: [] },
+            { name: 'upsert', permissions: ['*'] },
+            { name: 'create', permissions: ['*'] },
+        ],
+        schema: Joi.object({
+            _id                     : string.required(),
+            description             : string.required(),
+            location                : string.required(),
+            assetnum                : string.uppercase().pattern(/\w{2}\d{6}/).required(),   // llnnnnnn
+            description1            : string.required(),
+            jpnum                   : string.required(),
+            e_fecha_ensayo          : date.allow(''),
+            e_diagnostico_ensayo    : string.allow(''),
+            e_diagnostico_ensayo_lab: string.allow(''),
+            e_informe_ensayo        : string.allow(''),
+            e_inspector             : string.allow(''),
+            vendor                  : string.allow(''),
+            status                  : string.valid(...STATUS),
+            statusdate              : date.required()
+        })
+    },
+    { // ensayo
+        name      : 'mediciones',
+        dataSource: 'mongodb4',
+        actions   : [
+            { name: 'search', permissions: [] },
+            { name: 'upsert', permissions: ['USER'] },
+            { name: 'create', permissions: ['USER'] },
+        ],
+        schema: Joi.object({
+            _id             : string.required(),
+            wonum           : string.required(),
+            assetnum        : string.uppercase().pattern(/\w{2}\d{6}/).required(),                    // llnnnnnn
+            metername       : string.required(),
+            measurementvalue: Joi.alternatives().try(number, Joi.valid(...VAL_MEDIDAS)).required(),
+            measurementdate : date.required()
+        })
+    },
+    { // Activos_view
         name      : 'Activos_view',
         dataSource: 'mongodb4',
         actions   : [
             { name: 'search', permissions: [] },
         ]
     },
-    {
+    { // Activos_count
         name      : 'Activos_count',
         dataSource: 'mongodb4',
         actions   : [
             { name: 'search', permissions: [] },
         ]
     },
-    {
+    { // trafosP
         name      : 'trafosP',
         dataSource: 'mongodb4',
         actions   : [
             { name: 'search', permissions: [] },
         ]
     },
-    {
+    { // trabajos_TP
         name      : 'trabajos_TP',
         dataSource: 'mongodb4',
         actions   : [
             { name: 'search', permissions: [] },
         ]
     },
-    {
+    { // licenciasMTO
         name      : 'licenciasMTO',
         dataSource: 'mongodb4',
         actions   : [
             { name: 'search', permissions: [] },
         ]
     },
-    {
+    { // EstrucutraClases
         name      : 'EstructuraClases',
         dataSource: 'mongodb4',
         actions   : [
             { name: 'search', permissions: [] },
         ]
     },
-    {
+    { // relaciones
         name      : 'relaciones',
         dataSource: 'mongodb4',
         actions   : [
             { name: 'search', permissions: [] },
         ]
     },
-    {
+    { // Ubicaciones
         name      : 'Ubicaciones',
         dataSource: 'mongodb4',
         actions   : [
             { name: 'search', permissions: [] },
-            { name: 'upsert', permissions: [] },
+            { name: 'upsert', permissions: ['USER'] },
         ]
     },
-    {
+    { // planesTrabajo
         name      : 'planesTrabajo',
         dataSource: 'mongodb4',
         actions   : [
@@ -141,24 +188,50 @@ module.exports = [
             { name: 'upsert', permissions: [] },
         ]
     },
-    {
+    { // planesMtto
+        name      : 'planesMtto',
+        dataSource: 'mongodb4',
+        actions   : [
+            { name: 'search', permissions: ['USER'] },
+            { name: 'upsert', permissions: ['USER'] },
+        ],
+        schema: Joi.object({
+            _id        : string.required(),
+            descripcion: string.required(),
+            location   : string.allow(''),
+            PT         : string.required(),
+            assetnum   : string.required(),
+            ownergroup : string.required(),
+            fechaIni   : date.allow(''),
+            fechaFin   : date.allow(''),
+            fechaNxt   : date.allow(''),
+            usarOT     : string.required(),
+            status     : string.valid(...STATUSPLAN).required(),
+            fechaFirst : date.allow('').required(),
+            frequencia : number.required(),
+            unidad     : string.required(),
+            user       : string,
+            fechaModif : date.required(),
+        })
+    },
+    { // OTs
         name      : 'OTs',
         dataSource: 'mongodb4',
         actions   : [
             { name: 'search', permissions: [] },
-            { name: 'upsert', permissions: [] },
-            { name: 'create', permissions: [] },
-            { name: 'updateID', permissions: [] },
+            { name: 'upsert', permissions: ['USER'] },
+            { name: 'create', permissions: ['USER'] },
+            { name: 'updateID', permissions: ['USER'] },
         ]
     },
-    {
+    { // repo-horas
         name: 'repo-horas',
         dataSource: 'mongodb4',
         actions: [
             { name: 'search', permissions: [] },
-            { name: 'upsert', permissions: [] },
-            { name: 'create', permissions: [] },
-            { name: 'updateID', permissions: [] },
+            { name: 'upsert', permissions: ['USER'] },
+            { name: 'create', permissions: ['USER'] },
+            { name: 'updateID', permissions: ['USER'] },
         ],
         schema: Joi.object({
             _id           : string.required(),
@@ -167,7 +240,7 @@ module.exports = [
             dia           : number.min(1).max(31).required(),
             mes           : number.min(1).max(12).required(),
             anio          : number.integer().required(),
-            tipoOt        : string.uppercase().valid(...['MP', 'MONTAJE', 'NO_PROGRAMADO', 'NOVEDAD', 'EMERGENCIA', 'CAPACITACION', 'EXTERNO']).required(),
+            tipoOt        : string.uppercase().valid(...TIPO_OT).required(),
             idrh          : string.required(),
             apellidoNombre: string.required(),
             minIni        : number.required(),
@@ -192,23 +265,23 @@ module.exports = [
             // gerencia      : string.required(),
         })
     },
-    {
+    { // Persona
         name: 'Persona',
         dataSource: 'mongodb4',
         actions: [
             { name: 'search', permissions: [] },
-            { name: 'upsert', permissions: [] },
-            { name: 'create', permissions: [] },
-            { name: 'updateID', permissions: [] },
+            { name: 'upsert', permissions: ['USER'] },
+            { name: 'create', permissions: ['USER'] },
+            { name: 'updateID', permissions: ['USER'] },
         ]
     },
-    {
+    { // Reglas
         name      : 'Reglas',
         dataSource: 'mongodb4',
         actions   : [
-            { name: 'search', permissions: [] },
-            { name: 'upsert', permissions: [] },
-            { name: 'create', permissions: [] },
+            { name: 'search', permissions: ['USER'] },
+            { name: 'upsert', permissions: ['USER'] },
+            { name: 'create', permissions: ['USER'] },
         ]
     },
 ]

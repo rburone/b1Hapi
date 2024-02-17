@@ -64,9 +64,9 @@ module.exports = {
         server.auth.strategy('simple', 'bearer-access-token', {
             allowQueryToken: true,
             validate       : async (req, token/*, h*/) => {
-                const check       = await checkToken(token, req, options.modelToken, options.modelUser)
+                const check = await checkToken(token, req, options.modelToken, options.modelUser)
                 const credentials = {token, permissions: check.permissions};                             // 👨‍💻 Used by ACL system
-                  // const artifacts = {test: 'info'};
+                // const artifacts = {test: 'info'};
                 return {isValid: check.isValid, credentials/*, artifacts*/};
             }
         });

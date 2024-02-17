@@ -150,15 +150,21 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
             let payload = req.payload || null
             if (payload) {
                 if (Array.isArray(payload)) { // -------- BULK OPERATION
+                    let cleanPayload = []
                     if (payload.length > 0) {
-                        for (let i = 0; i < payload.length; i++) {
-                            const ele = validate(payload[i], schema)
-                            payload[i] = ele
-                        }
+                        if (schema) {
+                            for (let i = 0; i < payload.length; i++) {
+                                const valid = validate(payload[i], schema)
+                                if (valid) cleanPayload.push(payload[i])
+                            }
+
+                            if (cleanPayload.length == 0) throw Boom.badData('Empty payload after validation');
+                        } else cleanPayload = payload
+
                         if (methodUC == 'POST') {
                             try {
-                                const result = await db.collection(name).insertMany(payload, { ordered: false })
-                                if (verbose) console.log(`Payload size: ${payload.length}`);
+                                const result = await db.collection(name).insertMany(cleanPayload, { ordered: false })
+                                if (verbose) console.log(`Payload size: ${cleanPayload.length}`);
                                 return result
                             } catch (err) {
                                 if (err.code == 11000) {
@@ -170,7 +176,7 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
                         } else {
                             const upsert = methodUC == 'PUT'; // upsert if PUT
                             const bulkOperations = []
-                            payload.forEach(document => {
+                            cleanPayload.forEach(document => {
                                 bulkOperations.push({
                                     replaceOne: {
                                         filter: { _id: document._id }, // TODO Ver si no hay ID
@@ -181,12 +187,11 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
                             })
 
                             try {
-                                if (verbose) console.log(`Payload size: ${payload.length} ${bulkOperations.length}`);
                                 const result = await db.collection(name).bulkWrite(bulkOperations)
-                                // if (verbose) console.log(result);
+                                if (verbose) console.log(`Result: Ins: ${result.nInserted}  Ups: ${result.nUpserted}  Mod: ${result.nModified}  of ${bulkOperations.length}`);
                                 return result
                             } catch (error) {
-                                console.log(error);
+                                console.log(error.constructor.name, error.message); // TODO: Mostrar mejor
                                 throw Boom.internal(`Internal MongoDB error [${methodUC}]`, error)
                             }
                         }
@@ -195,21 +200,23 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
                     }
                 } else {
                     const { match } = genFilter(req, ObjectID)
-                    console.table(validate(payload))
-                        payload = methodUC == 'PATCH' ? genSet(req.payload) : req.payload
-                        try {
-                            let result
-                            if (methodUC == 'POST') {
-                                console.log(payload);
-                                result = await db.collection(name)[cmd](payload)
-                                console.log(result);
-                            } else {
-                                result = await db.collection(name)[cmd](match, payload)
-                            }
-                            return result
-                        } catch (error) {
-                            throw Boom.internal(`Internal MongoDB error [${methodUC}]`, error)
+                    if (schema) {
+                        payload = validate(payload, schema)
+                    }
+                    payload = methodUC == 'PATCH' ? genSet(req.payload) : req.payload
+                    try {
+                        let result
+                        if (methodUC == 'POST') {
+                            console.log(payload);
+                            result = await db.collection(name)[cmd](payload)
+                            console.log(result);
+                        } else {
+                            result = await db.collection(name)[cmd](match, payload)
                         }
+                        return result
+                    } catch (error) {
+                        throw Boom.internal(`Internal MongoDB error [${methodUC}]`, error)
+                    }
                 }
             } else {
                 throw Boom.badRequest(`Internal MongoDB error [${methodUC}] expected payload not found`, 'No payload')

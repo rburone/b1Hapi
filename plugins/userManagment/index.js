@@ -398,7 +398,7 @@ module.exports = {
                 method : 'GET',
                 path   : '',
                 options: {
-                    auth: false,
+                    auth: false
                       // validate: {
                       //     payload: Joi.object({
                       //         email: string.email().required(),
@@ -409,8 +409,26 @@ module.exports = {
                 handler: async (req) => {
                     const modelUser = getDbCollection(req, settings.connection, settings.modelUser)
                     const filter = {}
-
-                    const result = await usrMng.find()
+                    const result = await usrMng.find(modelUser)
+                    return result
+                }
+            },
+            { // LIST of rols
+                method: 'GET',
+                path: '/roles',
+                options: {
+                    auth: false
+                    // validate: {
+                    //     payload: Joi.object({
+                    //         email: string.email().required(),
+                    //         password: string.min(settings.passMinLen).required(),
+                    //     })
+                    // }
+                },
+                handler: async (req) => {
+                    // const modelUser = getDbCollection(req, settings.connection, settings.modelUser)
+                    // const filter = {}
+                    const result = server.methods.getConf('acl').roles
                     return result
                 }
             }
