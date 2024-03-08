@@ -137,6 +137,20 @@ module.exports = [
             { name: 'search', permissions: [] },
         ]
     },
+    { // Protecciones
+        name: 'Protecciones',
+        dataSource: 'mongodb4',
+        actions: [
+            { name: 'search', permissions: [] },
+        ]
+    },
+    { // Protecciones_view
+        name: 'Protecciones_view',
+        dataSource: 'mongodb4',
+        actions: [
+            { name: 'search', permissions: [] },
+        ]
+    },
     { // trafosP
         name      : 'trafosP',
         dataSource: 'mongodb4',

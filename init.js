@@ -2,9 +2,9 @@
 
 const configLoader = require('./lib/configLoader')  // Global configuration reader
 const server       = require('./server')            // Server hapi
-const C            = require('./lib/color_codes')   // Basic library for console colors
-
 const config       = configLoader.read()            // Read configuration file configured in .env
+
+require('./lib/b1-colorString.js')
 
 const d = dateStr => {
     const [date, time] = dateStr.split('T')
@@ -16,15 +16,14 @@ const d = dateStr => {
 
 server.init(config).then(server => {
     if (true) {
-        console.log(`\n\n ${C.FgBlue}██▄ ▄█ █▄█ ▄▀▄ █▀▄ █ \n █▄█  █ █ █ █▀█ █▀  █ `)
-        const ver = `┤ v.%s ├─`.padStart(17, '─')
-        console.log(` ${C.Bright}${C.FgBlue}${ver}${C.Reset}`, config.version)
-        // console.log(`             ${C.Bright}${C.FgBlue}v.%s${C.Reset}`, config.version)
-        console.log(`\nRunning on ${C.Bright}${C.BgGreen} %s ${C.Reset}`, server.info.uri)
-        console.log(`Node_env: ${C.Bright}${C.FgGreen}%s${C.Reset}`, config.NODE_ENV)
-        console.log(`Started from: ${C.FgGreen}${C.Bright}%s\x1b[0m`, config.sysRoot)
-        console.log(`Config: ${C.Bright}${C.FgGreen}%s${C.Reset}`, config.file)
-        console.log(`Started at: ${C.Bright}${C.FgGreen}%s${C.Reset}`, d((new Date()).toISOString()))
+        console.log('\n\n ██▄ ▄█ █▄█ ▄▀▄ █▀▄ █ \n █▄█  █ █ █ █▀█ █▀  █ '.FgBlue)
+        const ver = '┤ v.%s ├─'.padStart(17, '─')
+        console.log(` ${ver.Bright.FgBlue}`, config.version)
+        console.log('\nRunning on %s', server.info.uri.Margin.Bright.BgGreen)
+        console.log('Node_env: %s', config.NODE_ENV.Bright.FgGreen)
+        console.log('Started from: %s', config.sysRoot.FgGreen.Bright)
+        console.log('Config: %s', config.file.Bright.FgGreen)
+        console.log('Started at: %s', d((new Date()).toISOString()).Bright.FgGreen)
         // console.table(server.methods.getConf('server'))
         // console.log('\n')
     } else {

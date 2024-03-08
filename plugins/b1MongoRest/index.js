@@ -2,7 +2,8 @@
 const Boom = require('@hapi/boom')
 const Joi  = require('joi')
 const log  = require('../../lib/console_helper')
-const C    = require('../../lib/color_codes')
+const C = require('../../lib/color_codes')
+require('../../lib/b1-colorString')
 const { validate } = require('../../lib/methods').b1Lib
 
 const validMethods = ['GET', 'PUT', 'POST', 'PATCH', 'DELETE']
@@ -139,7 +140,8 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
 
                 if (verbose) {
                     // console.log(`Query: ${JSON.stringify(match)}`)
-                    console.log(`${C.BgWhite + C.FgBlack + (new Date()).toTimeString().split(' ')[0] + C.Reset} ${C.FgGreen + cmd + C.Reset} in ${C.FgGreen + name + C.Reset}: ${response.data.length} registers returned.`)
+                    // console.log(`${C.BgWhite + C.FgBlack + (new Date()).toTimeString().split(' ')[0] + C.Reset} ${C.FgGreen + cmd + C.Reset} in ${C.FgGreen + name + C.Reset}: ${response.data.length} registers returned.`)
+                    console.log(`${(new Date()).toTimeString().split(' ')[0].BgWhite.FgBlack} ${cmd.FgGreen} in ${name.FgGreen}: ${response.data.length} registers returned.`)
                 }
 
                 return response
