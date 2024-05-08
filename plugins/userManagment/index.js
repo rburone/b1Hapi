@@ -242,7 +242,7 @@ module.exports = {
                 options: {
                     validate: {
                         payload: Joi.object({
-                            password: string.min(settings.passMinLen).required(),
+                            password: string.min(settings.passMinLen).required().allow('*'),
                             email   : string.email().required(),
                             roles   : array.items(string.valid(...settings.roles)).required()
                         })
@@ -256,9 +256,11 @@ module.exports = {
                 handler: async (req) => {
                     const modelUser                  = getDbCollection(req, settings.connection, settings.modelUser)
                     const { email, password, roles } = req.payload
-                    const user                       = {
+                    const cryptPass = password != '*' ? bcrypt.hashSync(password, 10) : '*'
+
+                    const user = {
                         _id           : email,
-                        password      : bcrypt.hashSync(password, 10),
+                        password      : cryptPass,
                         roles         : roles,
                         validationCode: generate(settings.lenVerifCode),
                         emailVerified : !settings.verifyEmail,
@@ -275,12 +277,12 @@ module.exports = {
                             const info = await server.methods.sendEmail({
                                 from   : settings.fromEmail,
                                 to     : user._id,
-                                subject: 'Register OK',
+                                subject: settings.messages.subjectRegister || 'Register OK',
                                 html   : mail
                             })
 
                             if (info.error) {
-                                return server.errManager(info)
+                                return server.errManager({ error: info.error, from: `[plugin:userManagment:create:sendmail:${email}]` })
                             }
                         }
 
@@ -398,13 +400,11 @@ module.exports = {
                 method : 'GET',
                 path   : '',
                 options: {
-                    auth: false
-                      // validate: {
-                      //     payload: Joi.object({
-                      //         email: string.email().required(),
-                      //         password: string.min(settings.passMinLen).required(),
-                      //     })
-                      // }
+                    plugins: {
+                        hacli: {
+                            permission: settings.userAdmin
+                        }
+                    },
                 },
                 handler: async (req) => {
                     const modelUser = getDbCollection(req, settings.connection, settings.modelUser)
@@ -417,13 +417,11 @@ module.exports = {
                 method: 'GET',
                 path: '/roles',
                 options: {
-                    auth: false
-                    // validate: {
-                    //     payload: Joi.object({
-                    //         email: string.email().required(),
-                    //         password: string.min(settings.passMinLen).required(),
-                    //     })
-                    // }
+                    plugins: {
+                        hacli: {
+                            permission: settings.userAdmin
+                        }
+                    },
                 },
                 handler: async (req) => {
                     // const modelUser = getDbCollection(req, settings.connection, settings.modelUser)

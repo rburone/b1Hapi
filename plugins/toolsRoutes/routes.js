@@ -2,8 +2,8 @@
 const Boom         = require('@hapi/boom')
 const { generate } = require('../../lib/methods').b1Lib
 const Joi          = require('joi')
-const C            = require('../../lib/color_codes')
 
+require('../../lib/b1-colorString')
 const { string, boolean, array } = Joi.types();
 
   // const handler = function(r,h) {
@@ -115,12 +115,12 @@ module.exports = [
             try {
                 const result = await db.collection(config.security.modelUser).insertOne(superUser)
                 if (result.insertedId) {
-                    console.log(`${C.BgGreen+C.FgWhite}SERVER INITIALIZED!!${C.Reset}\n`)
+                    console.log(`SERVER INITIALIZED!!\n`.BgGreen.FgWhite)
                     return {superUser}
                 }
             } catch (error) {
                 if (error.code == 11000) {
-                    console.log(`${C.BgRed + C.FgWhite}WARNING!! TRYING REINITIALIZE SERVER!!${C.Reset} ${new Date()}\n`)
+                    console.log(`${'WARNING!! TRYING REINITIALIZE SERVER!!'.BgRed.FgWhite} ${new Date()}\n`)
                     return 'Server was initialized before'
                 } else {
                     throw Boom.internal('Internal MongoDB error', error)

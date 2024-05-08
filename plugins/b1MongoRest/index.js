@@ -1,10 +1,10 @@
 'use strict'
-const Boom = require('@hapi/boom')
-const Joi  = require('joi')
-const log  = require('../../lib/console_helper')
-const C = require('../../lib/color_codes')
-require('../../lib/b1-colorString')
+const Boom         = require('@hapi/boom')
+const Joi          = require('joi')
+const log          = require('../../lib/console_helper')
 const { validate } = require('../../lib/methods').b1Lib
+
+require('../../lib/b1-colorString')
 
 const validMethods = ['GET', 'PUT', 'POST', 'PATCH', 'DELETE']
 
@@ -247,7 +247,7 @@ module.exports = {
                     const route = createRoute(modelData, ACLDef.permissions, defRoute, apiPATH, verbose, dbList)
                     server.createRoute(route)
                 } else {
-                    const error      = new Error(`No exists \x1b[1m${ACLDef.name}\x1b[0m named route`)
+                    const error      = new Error(`No exists ${ACLDef.name.Bright} named route`)
                           error.code = 'NOCRITICAL'
                     server.errManager({ error, from: `[plugin:b1MongoRest:routesDefinitionCreation]` })
                 }

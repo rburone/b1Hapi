@@ -107,6 +107,15 @@ module.exports = {
                             autoCreate: false,
                         },
                     },
+                    { // webSocket
+                        plugin: require('./plugins/webSocket'),
+                        options: {
+                        }
+                    },
+                    { // Telnet
+                        plugin: require('./plugins/telnet'),
+                        options: config.telnet
+                    }
                     // {
                     //     plugin: require('./plugins/b1ShellExec'),
                     //     options: {

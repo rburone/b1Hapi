@@ -12,6 +12,12 @@ module.exports = {
         // --------------------------------------------[ OPTIONAL ]
         // host      : 'localhost',           // [D] Server URL
     },
+    messages: {
+        subjectRegister: 'Register OK'        // [R] Subject for notify user registration
+    },
+    telnet: {
+        path: '/telnet'
+    },
     certificate: {
         key : '/certificates/localhost-key.pem', // [R] Path to file with key if useTls is true
         cert: '/certificates/localhost.pem'      // [R] Path to with certificate if useTls is true
@@ -20,7 +26,7 @@ module.exports = {
         modelToken  : 'AccessToken',      // [R] Model with tokens data
         modelUser   : 'User',             // [R] Model with users data
         pathAPI     : 'User',             // [R] REST api path for user managment
-        connection   : 'mongodb4'         // [R] Conection name
+        connection  : 'mongodb4'          // [R] Conection name
         // --------------------------------------------[ OPTIONAL ]
         // verifyEmail : false,           // [D] Is verification of email required?
         // ttl         : 1209600,         // [D] Token duration
