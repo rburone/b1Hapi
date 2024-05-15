@@ -94,7 +94,7 @@ module.exports = [
             description             : string.required(),
             location                : string.required(),
             assetnum                : string.uppercase().pattern(/\w{2}\d{6}/).required(),   // llnnnnnn
-            description1            : string.required(),
+            desc_asset              : string.required(),
             jpnum                   : string.required(),
             e_fecha_ensayo          : date.allow(''),
             e_diagnostico_ensayo    : string.allow(''),
@@ -103,10 +103,10 @@ module.exports = [
             e_inspector             : string.allow(''),
             vendor                  : string.allow(''),
             status                  : string.valid(...STATUS),
-            statusdate              : date.required()
+            statusdate              : string.required()
         })
     },
-    { // ensayo
+    { // mediciones
         name      : 'mediciones',
         dataSource: 'mongodb4',
         actions   : [
@@ -115,7 +115,7 @@ module.exports = [
             { name: 'create', permissions: ['USER'] },
         ],
         schema: Joi.object({
-            _id             : string.required(),
+            // _id             : string.required(),
             wonum           : string.required(),
             assetnum        : string.uppercase().pattern(/\w{2}\d{6}/).required(),                    // llnnnnnn
             metername       : string.required(),
@@ -296,6 +296,30 @@ module.exports = [
             { name: 'search', permissions: ['USER'] },
             { name: 'upsert', permissions: ['USER'] },
             { name: 'create', permissions: ['USER'] },
+        ]
+    },
+    { // Importaciones
+        name      : 'importaciones',
+        dataSource: 'mongodb4',
+        actions   : [
+            { name: 'search', permissions: ['USER'] },
+            { name: 'upsert', permissions: ['USER'] },
+            { name: 'create', permissions: ['USER'] },
+        ],
+        schema: Joi.object({
+            dateFile : string.required(),
+            user     : string.required(),
+            type     : string.required(),
+            updates  : number.integer(),
+            news     : number.integer(),
+            timeStamp: date.timestamp()
+        })
+    },
+    { // Importaciones_view
+        name      : 'importaciones_view',
+        dataSource: 'mongodb4',
+        actions   : [
+            { name: 'search', permissions: ['USER'] },
         ]
     },
 ]

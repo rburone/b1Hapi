@@ -2,7 +2,7 @@
 const Boom         = require('@hapi/boom')
 const Joi          = require('joi')
 const log          = require('../../lib/console_helper')
-const { validate } = require('../../lib/methods').b1Lib
+const { validate, tryAttemp } = require('../../lib/methods').b1Lib
 
 require('../../lib/b1-colorString')
 
@@ -157,7 +157,8 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
                         if (schema) {
                             for (let i = 0; i < payload.length; i++) {
                                 const valid = validate(payload[i], schema)
-                                if (valid) cleanPayload.push(payload[i])
+                                // if (valid) cleanPayload.push(payload[i])
+                                if (valid) cleanPayload.push(valid)
                             }
 
                             if (cleanPayload.length == 0) throw Boom.badData('Empty payload after validation');
@@ -203,9 +204,16 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
                 } else {
                     const { match } = genFilter(req, ObjectID)
                     if (schema) {
-                        payload = validate(payload, schema)
+                        // payload = validate(payload, schema)
+                        const { value, error } = tryAttemp(payload, schema)
+                        if (!error) {
+                            payload = value
+                        } else {
+                            console.error('Schema error: %s \n', value)
+                        }
                     }
-                    payload = methodUC == 'PATCH' ? genSet(req.payload) : req.payload
+                    // payload = methodUC == 'PATCH' ? genSet(req.payload) : req.payload
+                    payload = methodUC == 'PATCH' ? genSet(payload) : payload
                     try {
                         let result
                         if (methodUC == 'POST') {
