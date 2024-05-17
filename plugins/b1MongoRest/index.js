@@ -82,6 +82,78 @@ function genSet(payload) {
     return set
 }
 
+async function tryGet(db, name, cmd, req, ObjectID, verbose = false) {
+    const { match, sort, projection } = genFilter(req, ObjectID)
+    let response = []
+
+    if (verbose) {
+        // console.log(`Query: \n${JSON.stringify(match)}`)
+    }
+
+    try {
+        const result = await db.collection(name)[cmd](match, projection)
+
+        if (result.constructor.name == 'FindCursor') {
+            if (sort) {
+                response = { data: await result.sort(sort).toArray() }
+            } else {
+                response = { data: await result.toArray() }
+            }
+        } else {
+            response = { data: result }
+        }
+
+        if (verbose) {
+            // console.log(`Query: ${JSON.stringify(match)}`)
+            // console.log(`${C.BgWhite + C.FgBlack + (new Date()).toTimeString().split(' ')[0] + C.Reset} ${C.FgGreen + cmd + C.Reset} in ${C.FgGreen + name + C.Reset}: ${response.data.length} registers returned.`)
+            console.log(`${(new Date()).toTimeString().split(' ')[0].BgWhite.FgBlack} ${cmd.FgGreen} in ${name.FgGreen}: ${response.data.length} registers returned.`)
+        }
+
+        return response
+    } catch (error) {
+        throw Boom.internal('Internal MongoDB error [GET]', error)
+    }
+}
+
+async function tryDelete(db, name, cmd, req, ObjectID, verbose = false) {
+    const { match } = genFilter(req, ObjectID)
+    let response = []
+
+    if (verbose) {
+        // console.log(`Query: \n${JSON.stringify(match)}`)
+    }
+
+    try {
+        const result = await db.collection(name)[cmd](match)
+
+        response = { data: result.deletedCount }
+
+        if (verbose) {
+            console.log(`${(new Date()).toTimeString().split(' ')[0].BgWhite.FgBlack} ${cmd.FgGreen} in ${name.FgGreen}: ${response.data} registers deleted.`)
+        }
+
+        return response
+    } catch (error) {
+        throw Boom.internal('Internal MongoDB error [DELETE]', error)
+    }
+}
+
+async function tryDrop(db, name, verbose = false) {
+    try {
+        const result = await db.collection(name)[cmd]()
+
+        if (verbose) {
+            // console.log(`Query: ${JSON.stringify(match)}`)
+            // console.log(`${C.BgWhite + C.FgBlack + (new Date()).toTimeString().split(' ')[0] + C.Reset} ${C.FgGreen + cmd + C.Reset} in ${C.FgGreen + name + C.Reset}: ${response.data.length} registers returned.`)
+            console.log(`${(new Date()).toTimeString().split(' ')[0].BgWhite.FgBlack} ${cmd.FgGreen} in ${name.FgGreen}: ${response}.`)
+        }
+
+        return result
+    } catch (error) {
+        throw Boom.internal('Internal MongoDB error [DROP]', error)
+    }
+}
+
 function createRoute(modelData, permissions, definition, apiPATH, verbose, dbList) {
     let { cmd, method, path }  = definition
     const { name, dataSource } = modelData
@@ -112,47 +184,25 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
         const db       = Array.isArray(req.mongo.db) ? req.mongo.db[idxDB] : req.mongo.db
         const ObjectID = req.mongo.ObjectID;
         const methodUC = method.toUpperCase()
-        let   response = []
 
         if (verbose) {
-            console.log(`Try ${methodUC} in ${name}.`)
+            console.log(`Try ${methodUC} (${cmd}) in ${name}.`)
         }
 
         if (methodUC == 'GET') {
-            const { match, sort, projection } = genFilter(req, ObjectID)
-
-            if (verbose) {
-                console.log(`Query: \n${JSON.stringify(match)}`)
+            return await tryGet(db, name, cmd, req, ObjectID, verbose)
+        } else if (methodUC == 'DELETE') {
+            if (cmd.toUpperCase() == 'DROP') {
+                return await tryDrop(db, name, verbose)
+            } else {
+                return await tryDelete(db, name, cmd, req, ObjectID, verbose)
             }
 
-            try {
-                const result = await db.collection(name)[cmd](match, projection)
-
-                if (result.constructor.name == 'FindCursor') {
-                    if (sort) {
-                        response = { data: await result.sort(sort).toArray() }
-                    } else {
-                        response = { data: await result.toArray() }
-                    }
-                } else {
-                    response = { data: result }
-                }
-
-                if (verbose) {
-                    // console.log(`Query: ${JSON.stringify(match)}`)
-                    // console.log(`${C.BgWhite + C.FgBlack + (new Date()).toTimeString().split(' ')[0] + C.Reset} ${C.FgGreen + cmd + C.Reset} in ${C.FgGreen + name + C.Reset}: ${response.data.length} registers returned.`)
-                    console.log(`${(new Date()).toTimeString().split(' ')[0].BgWhite.FgBlack} ${cmd.FgGreen} in ${name.FgGreen}: ${response.data.length} registers returned.`)
-                }
-
-                return response
-            } catch (error) {
-                throw Boom.internal('Internal MongoDB error [GET]', error)
-            }
         } else {
             let payload = req.payload || null
             if (payload) {
+                let cleanPayload = []
                 if (Array.isArray(payload)) { // -------- BULK OPERATION
-                    let cleanPayload = []
                     if (payload.length > 0) {
                         if (schema) {
                             for (let i = 0; i < payload.length; i++) {
@@ -180,13 +230,19 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
                             const upsert = methodUC == 'PUT'; // upsert if PUT
                             const bulkOperations = []
                             cleanPayload.forEach(document => {
-                                bulkOperations.push({
+                                const query = {
                                     replaceOne: {
-                                        filter: { _id: document._id }, // TODO Ver si no hay ID
+                                        filter: {},
                                         replacement: document,
                                         upsert,
                                     },
-                                });
+                                }
+                                if (document._id) {
+                                    query.replaceOne.filter = { _id: document._id }
+                                }
+
+                                console.log(query)
+                                bulkOperations.push(query);
                             })
 
                             try {
@@ -201,27 +257,22 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
                     } else {
                         throw Boom.badRequest(`Internal MongoDB error [${methodUC}] empty payload`, 'Empty payload')
                     }
-                } else {
+                } else { // -------------------------------------------- UNIT OPERATION
                     const { match } = genFilter(req, ObjectID)
                     if (schema) {
-                        // payload = validate(payload, schema)
-                        const { value, error } = tryAttemp(payload, schema)
-                        if (!error) {
-                            payload = value
-                        } else {
-                            console.error('Schema error: %s \n', value)
-                        }
-                    }
-                    // payload = methodUC == 'PATCH' ? genSet(req.payload) : req.payload
-                    payload = methodUC == 'PATCH' ? genSet(payload) : payload
+                        cleanPayload = validate(payload, schema)
+                    } else cleanPayload = payload
+
+                    cleanPayload = methodUC == 'PATCH' ? genSet(cleanPayload) : cleanPayload
+
                     try {
                         let result
                         if (methodUC == 'POST') {
-                            console.log(payload);
-                            result = await db.collection(name)[cmd](payload)
-                            console.log(result);
+                            // console.log(cleanPayload);
+                            result = await db.collection(name)[cmd](cleanPayload)
+                            // console.log(result);
                         } else {
-                            result = await db.collection(name)[cmd](match, payload)
+                            result = await db.collection(name)[cmd](match, cleanPayload)
                         }
                         return result
                     } catch (error) {

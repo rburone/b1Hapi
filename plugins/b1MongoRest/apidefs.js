@@ -21,7 +21,11 @@ const API = {
         // Create a new instance of the model and persist it into the data source.
         { 'name': 'create', 'cmd': 'insertOne', 'method': 'POST', 'path': '/:model' },
         // Delete a model instance by {id} from the data source.
-        { 'name': 'removeID', 'cmd': 'remove', 'method': 'DELETE', 'path': '/:model/{_id}' },
+        { 'name': 'deleteID', 'cmd': 'deleteOne', 'method': 'DELETE', 'path': '/:model/{_id}' },
+        // Delete a model(s) instance(s) from the data source.
+        { 'name': 'delete', 'cmd': 'deleteMany', 'method': 'DELETE', 'path': '/:model' },
+        // Drop data source.
+        { 'name': 'clear', 'cmd': 'drop', 'method': 'DELETE', 'path': '/:model/clear' },
     ],
     model
 }

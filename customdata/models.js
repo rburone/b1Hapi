@@ -113,6 +113,7 @@ module.exports = [
             { name: 'search', permissions: [] },
             { name: 'upsert', permissions: ['USER'] },
             { name: 'create', permissions: ['USER'] },
+            { name: 'delete', permissions: ['USER'] },
         ],
         schema: Joi.object({
             // _id             : string.required(),
