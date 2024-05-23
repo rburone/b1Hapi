@@ -1,15 +1,22 @@
 module.exports = {
     server: {
-        port      : 3500,                    // [R] Server port
-        publicPath: `${__dirname}/public`,   // [R] System path for static files or empty to disable
-        rootAPI   : '',                      // [R] REST api path for all routes created
-        userAPI   : '',                      // [R] REST api path for user managment
-        toolsAPI  : 'api',                   // [R] REST api path for access special routes
-        viewsPath : 'views',                 // [R] System path (realtive) of templates to render views
-        useTls    : false,                   // [R] will it use certificates? (https)
-        verbose   : true,                    // [R] Will it print some messages on console?
-        sendMails : true,                    // [R] Will it send emails notificacions?
-        customData: `${__dirname}/customdata`// [R] System path for custom and plugins data
+        port      : 3500,                     // [R] Server port
+        publicPath: `${__dirname}/public`,    // [R] System path for static files or empty to disable
+        rootAPI   : '',                       // [R] REST api path for all routes created
+        toolsAPI  : 'api',                    // [R] REST api path for access special routes
+        viewsPath : 'views',                  // [R] System path (realtive) of templates to render views
+        useTls    : false,                    // [R] will it use certificates? (https)
+        verbose   : true,                     // [R] Will it print some messages on console?
+        sendMails : true,                     // [R] Will it send emails notificacions?
+        customData: `${__dirname}/customdata`,// TODO MOVER [R] System path for custom and plugins data
+        // --------------------------------------------[ OPTIONAL ]
+        // host      : 'localhost',           // [D] Server URL
+    },
+    messages: {
+        subjectRegister: 'Register OK'        // [R] Subject for notify user registration
+    },
+    telnet: {
+        path: '/telnet'
     },
     certificate: {
         key : '/certificates/localhost-key.pem', // [R] Path to file with key if useTls is true
@@ -18,6 +25,8 @@ module.exports = {
     security: {
         modelToken  : 'AccessToken',      // [R] Model with tokens data
         modelUser   : 'User',             // [R] Model with users data
+        pathAPI     : 'User',             // [R] REST api path for user managment
+        connection  : 'mongodb4'          // [R] Conection name
         // --------------------------------------------[ OPTIONAL ]
         // verifyEmail : false,           // [D] Is verification of email required?
         // ttl         : 1209600,         // [D] Token duration
@@ -39,22 +48,22 @@ module.exports = {
     dataSource: {
         defFile   : `${__dirname}/plugins/b1MongoRest/apidefs.js`,   // [R] File with API definition
         path      : '/db',
-        conections: [
+        connections: [
             {
-                name: 'mongodb4',                           // [R] Conection name
-                uri : 'mongodb://128.0.5.58:27044/maxclon', // [R] URL MongoDB collection
+                name: 'mongodb4',                             // [R] Conection name
+                uri : 'mongodb://128.0.5.58:27044/maxclon',   // [R] URL MongoDB collection
             },
             {
-                name: 'mongoStage',                         // [R] Conection name
-                uri : 'mongodb://localhost:27017/gestionStaging',   // [R] URL MongoDB collection
+                name: 'mongoStage',                                  // [R] Conection name
+                uri : 'mongodb://128.0.5.58:27017/gestionStaging',   // [R] URL MongoDB collection
             }
         ]
     },
     views: {
-        // emailVerificationCode  : 'email_code',       // [D] Email to send verification code to new user
-        // formChkVerificationCode: 'form_verify_code', // [D] HTML form for check and validate code
-        formChangePass    : 'form_change_pass_ES',      // [D] HTML form for password change with actual pass
-        formChgPassByCode : 'form_code_change_pass_ES'  // [D] HTML form for password change with valid code
+        //   emailVerificationCode  : 'email_code',       // [D] Email to send verification code to new user
+        //   formChkVerificationCode: 'form_verify_code', // [D] HTML form for check and validate code
+        formChangePass    : 'form_change_pass_ES',        // [D] HTML form for password change with actual pass
+        formChgPassByCode : 'form_code_change_pass_ES'    // [D] HTML form for password change with valid code
     }
 }
 // -------- Reference

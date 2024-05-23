@@ -241,7 +241,6 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
                                     query.replaceOne.filter = { _id: document._id }
                                 }
 
-                                console.log(query)
                                 bulkOperations.push(query);
                             })
 

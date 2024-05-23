@@ -52,7 +52,11 @@ module.exports = {
             {
                 name: 'mongodb4',                             // [R] Conection name
                 uri : 'mongodb://128.0.5.58:27044/maxclon',   // [R] URL MongoDB collection
-            }
+            },
+            // {
+            //     name: 'mongoStage',                                  // [R] Conection name
+            //     uri : 'mongodb://128.0.5.58:27017/gestionStaging',   // [R] URL MongoDB collection
+            // }
         ]
     },
     views: {

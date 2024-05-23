@@ -28,7 +28,7 @@ module.exports = [
             { name: 'updateID', permissions: ['USER'] },
         ]
     },
-    {
+    { // material
         name      : 'material',
         dataSource: 'mongodb4',
         actions   : [
@@ -39,7 +39,7 @@ module.exports = [
             { name: 'create', permissions: ['USER'] },
         ]
     },
-    {
+    { // material_view
         name      : 'material_view',
         dataSource: 'mongodb4',
         actions   : [
@@ -47,7 +47,7 @@ module.exports = [
             { name: 'findID', permissions: ['USER'] },
         ]
     },
-    {
+    { // tramitesae_view
         name      : 'tramitesae_view',
         dataSource: 'mongodb4',
         actions   : [
@@ -55,7 +55,7 @@ module.exports = [
             { name: 'findID', permissions: ['USER'] },
         ]
     },
-    {
+    { // tramitesae
         name      : 'tramitesae',
         dataSource: 'mongodb4',
         actions   : [
@@ -72,13 +72,14 @@ module.exports = [
             { name: 'search', permissions: [] },
         ]
     },
-    {
+    { // Activos
         name      : 'Activos',
         dataSource: 'mongodb4',
         actions   : [
-            { name: 'search', permissions: [] },
-            { name: 'upsert', permissions: ['USER'] },
-            { name: 'create', permissions: ['USER'] },
+            { name: 'search', permissions: ['USER'] },
+            { name: 'findID', permissions: ['USER'] },
+            { name: 'upsert', permissions: ['ADMIN'] },
+            { name: 'create', permissions: ['ADMIN'] },
         ]
     },
     { // ensayo
@@ -111,9 +112,9 @@ module.exports = [
         dataSource: 'mongodb4',
         actions   : [
             { name: 'search', permissions: [] },
-            { name: 'upsert', permissions: ['USER'] },
-            { name: 'create', permissions: ['USER'] },
-            { name: 'delete', permissions: ['USER'] },
+            { name: 'upsert', permissions: ['ADMIN'] },
+            { name: 'create', permissions: ['ADMIN'] },
+            { name: 'delete', permissions: ['ADMIN'] },
         ],
         schema: Joi.object({
             // _id             : string.required(),
@@ -320,7 +321,7 @@ module.exports = [
         name      : 'importaciones_view',
         dataSource: 'mongodb4',
         actions   : [
-            { name: 'search', permissions: ['USER'] },
+            { name: 'search', permissions: [] },
         ]
     },
 ]
