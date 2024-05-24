@@ -295,9 +295,10 @@ module.exports = [
         name      : 'Reglas',
         dataSource: 'mongodb4',
         actions   : [
-            { name: 'search', permissions: ['USER'] },
-            { name: 'upsert', permissions: ['USER'] },
-            { name: 'create', permissions: ['USER'] },
+            { name: 'search',   permissions: ['USER'] },
+            { name: 'deleteID', permissions: ['USER'] },
+            { name: 'upsert',   permissions: ['USER'] },
+            { name: 'create',   permissions: ['USER'] },
         ]
     },
     { // Importaciones
