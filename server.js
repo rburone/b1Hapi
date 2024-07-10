@@ -133,14 +133,29 @@ module.exports = {
                 {
                     plugin : require('./plugins/b1nodemailer'),
                     options: {
-                        host: config.mail.host,
-                        port: config.mail.port,
-                        auth: {
+                        host  : config.mail.host,
+                        port  : config.mail.port,
+                        secure: config.mail.secure,
+                        auth  : {
                             user: process.env.MAIL_USER,
                             pass: process.env.MAIL_PASS
                         }
                     }
                 },
+                /*{
+                    plugin: require('./plugins/b1nodemailer'),
+                    options: {
+                        service: 'gmail',
+                        auth: {
+                            type        : 'OAuth2',
+                            user        : process.env.MAIL_USER,
+                            pass        : process.env.MAIL_PASS,
+                            clientId    : process.env.OAUTH_CLIENTID,
+                            clientSecret: process.env.OAUTH_CLIENT_SECRET,
+                            refreshToken: process.env.OAUTH_REFRESH_TOKEN
+                        }
+                    }
+                }*/
             )
         }
 

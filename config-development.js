@@ -40,10 +40,15 @@ module.exports = {
         // roles: ['SUPER_ADMIN', 'ADMIN', 'USER', 'GUEST'],   // [D] Roles for ACL
         // userAdmin: 'ADMIN',                                 // [D] Role for user managment
     },
-    mail: {
+    _mail: {
         host     : 'localhost',     // [R] Host
         port     : '25',            // [R] Port
         fromEmail: 'app@app.com',   // [R] Outgoing email address from the server to send validation codes
+    },
+    mail: {
+        host: 'smtp.gmail.com',
+        port: '465',
+        secure: true
     },
     dataSource: {
         defFile   : `${__dirname}/plugins/b1MongoRest/apidefs.js`,   // [R] File with API definition

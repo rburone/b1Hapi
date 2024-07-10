@@ -15,13 +15,15 @@
 const nodemailer = require('nodemailer');
 const Joi        = require('joi');
 
-const {string, number} = Joi.types();
+const {string, number, boolean} = Joi.types();
 const OptionsSchema = Joi.object({
-    host: string.required(),
-    port: number.required(),
-    auth: Joi.object({
+    service: string.required(),
+    // host   : string.required(),
+    // port   : number.required(),
+    // secure : boolean.required(),
+    auth   : Joi.object({
         user: string
-            .alphanum()
+            // .alphanum()
             .min(3)
             .max(30)
             .required(),
@@ -40,13 +42,14 @@ const EmailSchema = Joi.object({
 module.exports = {
     name: 'b1nodemailer',
     async register(server, options) {
-        server.assert(Joi.assert, options, OptionsSchema, '[plugin:b1nodemailer:options]')
-        
+        // server.assert(Joi.assert, options, OptionsSchema, '[plugin:b1nodemailer:options]') // HACK: [10/07/2024] Se quito validación opciones momentaneamente
+
         const transporter = nodemailer.createTransport(options);
         transporter.OK = true
         transporter.verify(error => {
             if (error) {
                 console.log('SMTP: \x1b[43m\x1b[31m ECONNREFUSED \x1b[0m\n');
+                console.error(error)
             }
             transporter.OK = false
         });

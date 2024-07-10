@@ -37,3 +37,5 @@ MAIL_USER = nouser
 MAIL_PASS = nopass
 
 ```
+## Referencias
+[gmail + nodemailer](https://www.freecodecamp.org/espanol/news/como-usar-nodemailer-para-enviar-correos-electronicos-desde-tu-servidor-node-js/)
