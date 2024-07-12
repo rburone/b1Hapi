@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <link rel="stylesheet" href="/views.css">
+    <link rel="stylesheet" href="/hapi/views.css">
 </head>
 
 <body>
@@ -11,7 +11,7 @@
                 <legend>&nbsp;Cambiar clave:&nbsp;</legend>
                 Usuario: <input class="link" type="text" name="email" required /></br>
                 Clave actual: <input class="link" type="password" name="actual" minlength="<%= passMinLen %>" required /></br>
-                Nueva clave: <input id="password" class="link" type="password" name="new" minlength="<%= passMinLen %>" required /></br>
+                Clave nueva: <input id="password" class="link" type="password" name="new" minlength="<%= passMinLen %>" required /></br>
                 Confirmación de clave: <input id="confirm_password" class="link" type="password" name="retype" minlength="<%= passMinLen %>" required /></br>
             </fieldset>
             <input class="action" type="submit" label="Cambiar">

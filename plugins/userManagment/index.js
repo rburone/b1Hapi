@@ -269,24 +269,26 @@ module.exports = {
                     const result = await usrMng.create(modelUser, user)
 
                     if (!result.error) {
+                        let sentMail = false
                         if (settings.verifyEmail && settings.sendMails) {
                             const mail = await server.render(settings.emailVerificationCode, {
-                                code: user.validationCode
+                                code: user.validationCode,
+                                url: `${settings.proxyURL}/${settings.path}/changePassCodeForm/${user._id}`
                             });
 
                             const info = await server.methods.sendEmail({
                                 from   : settings.fromEmail,
                                 to     : user._id,
-                                subject: settings.messages.subjectRegister || 'Register OK',
+                                subject: settings.subjectRegister || 'Register OK',
                                 html   : mail
                             })
 
-                            if (info.error) {
-                                return server.errManager({ error: info.error, from: `[plugin:userManagment:create:sendmail:${email}]` })
+                            if (info == 'ok') {
+                                sentMail = true
                             }
                         }
 
-                        return user.validationCode
+                        return {validationCode: user.validationCode, sentMail}
                     } else {
                         return server.errManager({error: result.error, from: `[plugin:userManagment:create:${email}]`})
                     }
@@ -316,7 +318,7 @@ module.exports = {
                     }
                 }
             },
-            { // Return change password with valid code form
+            { // Return change password form with valid code form
                 method : 'GET',
                 path   : '/changePassCodeForm/{email?}',
                 options: {
@@ -332,9 +334,10 @@ module.exports = {
                         const form = await server.render(settings.formChgPassByCode, {
                             passMinLen: settings.passMinLen,
                             lengthcode: settings.lenVerifCode,
-                            url       : `${settings.path}/setPassword`,
+                            url       : `setPassword`,           // URL Relativa o URL Absoluta `/${settings.path}/setPassword`,
                             email     : req.params.email
                         });
+
                         return form
                     } catch (error) {
                         return server.errManager({ error, from: `[plugin:userManagment:changePassCodeForm]` })

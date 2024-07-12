@@ -14,6 +14,7 @@
 */
 const nodemailer = require('nodemailer');
 const Joi        = require('joi');
+require('../lib/b1-colorString')
 
 const {string, number, boolean} = Joi.types();
 const OptionsSchema = Joi.object({
@@ -48,10 +49,11 @@ module.exports = {
         transporter.OK = true
         transporter.verify(error => {
             if (error) {
-                console.log('SMTP: \x1b[43m\x1b[31m ECONNREFUSED \x1b[0m\n');
-                console.error(error)
+                console.log('SMTP: ' + ` ECONNREFUSED ${error.code} \n`.BgYellow.FgBlack);
+                transporter.OK = false
+            } else {
+                console.log('SMTP: ' + options.service.Margin.BgGreen.FgWhite + '\n')
             }
-            transporter.OK = false
         });
 
         server.method({

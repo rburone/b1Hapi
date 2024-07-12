@@ -3,6 +3,7 @@
 const crypto     = require('crypto');
 const bcrypt     = require('bcryptjs');
 const {generate} = require('../../lib/methods').b1Lib
+require('../../lib/b1-colorString')
 
 async function saveToken(collection, userId, ttl) {
     const accessToken = {
@@ -137,6 +138,7 @@ module.exports = {
             }
 
             const result = await userCollection.updateOne({_id, validationCode}, {$set})
+            console.log(`${(new Date()).toTimeString().split(' ')[0].BgWhite.FgBlack} [lib:userMangment:chkVerificationCode]`, validationCode, result.modifiedCount == 1 ? 'OK'.FgGreen:'NO'.FgRed)
             if (result.modifiedCount == 1) {
                 return 'ok'
             } else {
@@ -161,6 +163,7 @@ module.exports = {
             }
 
             const result = await userCollection.updateOne({_id, emailVerified: true}, {$set})
+            console.log(`${(new Date()).toTimeString().split(' ')[0].BgWhite.FgBlack} [lib:userMangment:updatePass]`, _id, result.modifiedCount == 1 ? 'YES'.FgGreen : 'NO'.FgRed)
             if (result.modifiedCount == 1) {
                 return 'ok'
             } else {
@@ -180,6 +183,7 @@ module.exports = {
     async create(userCollection, user) {
         try {
             const result = await userCollection.insertOne(user)
+            console.log(`${(new Date()).toTimeString().split(' ')[0].BgWhite.FgBlack} [lib:userMangment:create]`, user._id, result.insertedId ? 'YES'.Bright.FgGreen : 'NO'.Bright.FgRed)
             return result
         } catch (error) {
             return {error, from: `[lib:userMangment:create:${user._id}]`}

@@ -71,10 +71,12 @@ module.exports = {
                             secureChange           : config.security.secureChange,
                             oneTimeCode            : config.security.oneTimeCode,
                             sendMails              : config.server.sendMails,
+                            subjectRegister        : config.messages.subjectRegister,
                             emailVerificationCode  : config.views.emailVerificationCode,
                             formChkVerificationCode: config.views.formChkVerificationCode,
                             formChangePass         : config.views.formChangePass,
                             formChgPassByCode      : config.views.formChgPassByCode,
+                            proxyURL               : config.server.proxyURL
                         }
                     },
                     { // hacli
@@ -133,9 +135,15 @@ module.exports = {
                 {
                     plugin : require('./plugins/b1nodemailer'),
                     options: {
-                        host  : config.mail.host,
-                        port  : config.mail.port,
-                        secure: config.mail.secure,
+                        service         : config.mail.service,
+                        host            : config.mail.host,
+                        port            : config.mail.port,
+                        secureConnection: false,               // TLS requires secureConnection to be false
+                        // secure: config.mail.secure,
+                        // tls: {
+                        //     ciphers: "SSLv3",
+                        //     rejectUnauthorized: false,
+                        // },
                         auth  : {
                             user: process.env.MAIL_USER,
                             pass: process.env.MAIL_PASS
