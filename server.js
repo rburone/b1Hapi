@@ -5,7 +5,7 @@ const ejs    = require('ejs')           // View engine
 const vision = require('@hapi/vision')  // View hadler
 const inert  = require('@hapi/inert');  // Statics routes handler
 
-const apiPattern = /^[^\/].*[^\/]$/;
+// const apiPattern     = /^[^\/].*[^\/]$/;
 module.exports = {
     async init(config) {
         const manifest = {
@@ -83,14 +83,6 @@ module.exports = {
                         plugin : require('@antoniogiordano/hacli'),
                         options: {}
                     },
-                    { // disinfect
-                        plugin : require('disinfect'),
-                        options: {
-                            disinfectQuery  : true,
-                            disinfectParams : true,
-                            disinfectPayload: true
-                        }
-                    },
                     { // b1csvfy
                         plugin: require('./plugins/b1csvfy')
                     },
@@ -110,12 +102,12 @@ module.exports = {
                         },
                     },
                     { // webSocket
-                        plugin: require('./plugins/webSocket'),
+                        plugin : require('./plugins/webSocket'),
                         options: {
                         }
                     },
                     { // Telnet
-                        plugin: require('./plugins/telnet'),
+                        plugin : require('./plugins/telnet'),
                         options: config.telnet
                     }
                     // {
@@ -149,6 +141,7 @@ module.exports = {
                             pass: process.env.MAIL_PASS
                         }
                     }
+<<<<<<< Updated upstream
                 },
                 /*{
                     plugin: require('./plugins/b1nodemailer'),
@@ -164,10 +157,13 @@ module.exports = {
                         }
                     }
                 }*/
+=======
+                }
+>>>>>>> Stashed changes
             )
         }
 
-        const server = await Glue.compose(manifest/*, options*/);
+        const server = await Glue.compose(manifest /* ,options */ );
 
         await server.register(vision)
         server.views({
@@ -181,8 +177,8 @@ module.exports = {
             await server.route(require('./router/static-routes.js'))
         }
 
-          // █▄ ▄█ ██▀ ▀█▀ █▄█ ▄▀▄ █▀▄ ▄▀▀
-          // █ ▀ █ █▄▄  █  █ █ ▀▄▀ █▄▀ ▄█▀
+        // █▄ ▄█ ██▀ ▀█▀ █▄█ ▄▀▄ █▀▄ ▄▀▀
+        // █ ▀ █ █▄▄  █  █ █ ▀▄▀ █▄▀ ▄█▀
         server.method('getConf', (seccion = false) => {
             if (seccion) {
                 return config[seccion]
