@@ -1,16 +1,16 @@
 <html>
 
 <head>
-    <link rel="stylesheet" href="/views.css">
+    <link rel="stylesheet" href="/hapi/views.css">
 </head>
 
 <body>
     <div class="card">
-        <form id="form" action="<%= url %>">
+        <form id="form" action="{{url}}">
             <fieldset class="align-right">
-                <legend>&nbsp;Email validation code:&nbsp;</legend>
+                <legend>&nbsp;Código de validación de correo:&nbsp;</legend>
                 Email: <input class="link" type="text" name="email" required /></br>
-                Code: <input class="link" id="code" type="text" minlength="<%= lengthcode %>" required /></br>
+                Code: <input class="link" id="code" type="text" minlength="{{lengthcode}}" required /></br>
             </fieldset>
             <input class="action" type="submit" label="Change">
         </form>

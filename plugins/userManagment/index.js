@@ -273,7 +273,7 @@ module.exports = {
                         if (settings.verifyEmail && settings.sendMails) {
                             const mail = await server.render(settings.emailVerificationCode, {
                                 code: user.validationCode,
-                                url: `${settings.proxyURL}/${settings.path}/changePassCodeForm/${user._id}`
+                                url: `http://${settings.proxyURL}/${settings.path}/changePassCodeForm/${user._id}`
                             });
 
                             const info = await server.methods.sendEmail({

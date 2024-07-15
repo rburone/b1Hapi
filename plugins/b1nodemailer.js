@@ -49,10 +49,10 @@ module.exports = {
         transporter.OK = true
         transporter.verify(error => {
             if (error) {
-                console.log('SMTP: ' + ` ECONNREFUSED ${error.code} \n`.BgYellow.FgBlack);
+                console.log('SMTP: ' + options.service.Margin.Bright.BgGreen + ` ECONNREFUSED ${error.code} \n`.BgYellow.FgBlack);
                 transporter.OK = false
             } else {
-                console.log('SMTP: ' + options.service.Margin.BgGreen.FgWhite + '\n')
+                console.log('SMTP: ' + options.service.Margin.BgGreen.FgWhite + ' OK\n'.Bright.FgGreen)
             }
         });
 

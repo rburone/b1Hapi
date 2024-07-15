@@ -1,9 +1,9 @@
 'use strict'
 
-const Glue   = require('@hapi/glue')    // Server composer
-const ejs    = require('ejs')           // View engine
-const vision = require('@hapi/vision')  // View hadler
-const inert  = require('@hapi/inert');  // Statics routes handler
+const Glue     = require('@hapi/glue')    // Server composer
+const Mustache = require('mustache')      // View engine
+const vision   = require('@hapi/vision')  // View hadler
+const inert    = require('@hapi/inert');  // Statics routes handler
 
 // const apiPattern     = /^[^\/].*[^\/]$/;
 module.exports = {
@@ -141,7 +141,6 @@ module.exports = {
                             pass: process.env.MAIL_PASS
                         }
                     }
-<<<<<<< Updated upstream
                 },
                 /*{
                     plugin: require('./plugins/b1nodemailer'),
@@ -157,9 +156,6 @@ module.exports = {
                         }
                     }
                 }*/
-=======
-                }
->>>>>>> Stashed changes
             )
         }
 
@@ -167,7 +163,16 @@ module.exports = {
 
         await server.register(vision)
         server.views({
-            engines   : { ejs },
+            engines: {
+                html: {
+                    compile: function (template) {
+                        Mustache.parse(template);
+                        return function (context) {
+                            return Mustache.render(template, context);
+                        };
+                    }
+                }
+            },
             relativeTo: __dirname,
             path      : config.server.viewsPath
         })

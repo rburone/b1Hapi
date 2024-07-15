@@ -200,6 +200,7 @@ module.exports = {
     async delete(userCollection, _id) {
         try {
             const result = await userCollection.deleteOne({ _id })
+            console.log(`${(new Date()).toTimeString().split(' ')[0].BgWhite.FgBlack} [lib:userMangment:delete]`, _id, result.deletedCount ? 'YES'.Bright.FgGreen : 'NO'.Bright.FgRed)
             if (result.deletedCount == 1) {
                 return 'ok'
             } else {
@@ -225,7 +226,7 @@ module.exports = {
             }
 
             const result = await userCollection.updateOne({_id}, {$set})
-
+            console.log(`${(new Date()).toTimeString().split(' ')[0].BgWhite.FgBlack} [lib:userMangment:create]`, user._id, result.modifiedCount ? 'YES'.Bright.FgGreen : 'NO'.Bright.FgRed)
             if (result.modifiedCount == 1) {
                 return 'ok'
             } else {

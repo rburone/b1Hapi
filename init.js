@@ -1,9 +1,9 @@
 'use strict'
 
-const configLoader = require('./lib/configLoader')  // Global configuration reader
-const server       = require('./server')            // Server hapi
-const config       = configLoader.read()            // Read configuration file configured in .env
-const say = require('./lib/console_helper.js')
+const configLoader = require('./lib/configLoader')       // Global configuration reader
+const server       = require('./server')                 // Server hapi
+const config       = configLoader.read()                 // Read configuration file configured in .env
+const say          = require('./lib/console_helper.js')
 
 require('./lib/b1-colorString.js')
 
