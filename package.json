@@ -1,6 +1,6 @@
 {
   "name": "b1hapi",
-  "version": "2.4.3",
+  "version": "2.5.0",
   "description": "Simple Hapi framework implementation by Bur1",
   "repository": {
     "type": "git",
@@ -11,7 +11,8 @@
     "test": "lab",
     "lint": "eslint --ext .js ./",
     "start": "node init",
-    "dev": "node --watch init"
+    "devwatch": "node --watch init",
+    "dev": "nodemon init"
   },
   "author": "Ricardo D. Burone",
   "license": "ISC",
