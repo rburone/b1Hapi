@@ -77,9 +77,23 @@ module.exports = [
         dataSource: 'mongodb4',
         actions   : [
             { name: 'search', permissions: ['USER'] },
-            { name: 'findID', permissions: ['USER'] },
+            { name: 'findID', permissions: [] },
             { name: 'upsert', permissions: ['ADMIN'] },
             { name: 'create', permissions: ['ADMIN'] },
+        ]
+    },
+    { // Activos_view
+        name      : 'Activos_view',
+        dataSource: 'mongodb4',
+        actions   : [
+            { name: 'search', permissions: [] },
+        ]
+    },
+    { // Activos_count
+        name      : 'Activos_count',
+        dataSource: 'mongodb4',
+        actions   : [
+            { name: 'search', permissions: [] },
         ]
     },
     { // ensayo
@@ -124,20 +138,6 @@ module.exports = [
             measurementvalue: Joi.alternatives().try(number, Joi.valid(...VAL_MEDIDAS)).required(),
             measurementdate : date.required()
         })
-    },
-    { // Activos_view
-        name      : 'Activos_view',
-        dataSource: 'mongodb4',
-        actions   : [
-            { name: 'search', permissions: [] },
-        ]
-    },
-    { // Activos_count
-        name      : 'Activos_count',
-        dataSource: 'mongodb4',
-        actions   : [
-            { name: 'search', permissions: [] },
-        ]
     },
     { // Protecciones
         name: 'Protecciones',
@@ -283,6 +283,16 @@ module.exports = [
     },
     { // Persona
         name: 'Persona',
+        dataSource: 'mongodb4',
+        actions: [
+            { name: 'search', permissions: [] },
+            { name: 'upsert', permissions: ['USER'] },
+            { name: 'create', permissions: ['USER'] },
+            { name: 'updateID', permissions: ['USER'] },
+        ]
+    },
+    { // CapHumano
+        name: 'CapHumano',
         dataSource: 'mongodb4',
         actions: [
             { name: 'search', permissions: [] },

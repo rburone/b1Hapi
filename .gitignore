@@ -10,3 +10,4 @@ node_modules
 # VSCode related directories
 .vscode
 .history
+public/avatares

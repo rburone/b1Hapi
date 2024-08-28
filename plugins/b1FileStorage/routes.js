@@ -3,7 +3,7 @@
 const fs  = require('fs')
 const Joi = require('joi')
 
-function checkPath(destPath, create) {
+function checkPath(destPath, create = false) {
     let out = true
     if (fs.existsSync(destPath)) {
         try {
@@ -40,10 +40,25 @@ module.exports = [
                 })
             }
         },
-        handler: (req) => {
-            //TODO: Enviar archivo al cliente
-            console.log(req.params.name)
-            return 'Bur1 Storage';
+        handler: function(req, h) {
+            let result = false
+            const path = req.params.name.split('/')
+            const destPath = `${this.sysStorePath}/${path[0]}`
+            const { error } = checkPath(destPath)
+            if (error) {
+                result = this.errManager({ error, from: `[plugin:b1FileStorage:get:path_NotFound] => ${destPath}` })
+            } else {
+                const file = `${destPath}/${path[1]}`
+                console.log(file)
+                // TODO: Cambiar por uso con buffer y no depender del plugin inert
+                result = h.file(path[1], {
+                    mode: "attachment",
+                    filename: path[1],
+                    confine: destPath //This is optional. provide only if the file is saved in a different location
+                })
+            }
+
+            return result
         }
     },
     {
@@ -104,7 +119,7 @@ module.exports = [
             let result = true
             const path = req.params.name.split('/')
             const destPath = `${this.sysStorePath}/${path[0]}`
-            console.log('d', destPath)
+            console.log('d', this, destPath)
             const {error} = checkPath(destPath, false)
             if (error) {
                 result = this.errManager({error, from: `[plugin:b1FileStorage:path_NotFound] => ${destPath}`})

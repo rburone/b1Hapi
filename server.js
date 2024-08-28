@@ -92,7 +92,7 @@ module.exports = {
                             path: config.server.toolsAPI,
                         },
                     },
-                    { // file sotorage
+                    { // file storage
                         plugin : require('./plugins/b1FileStorage'),
                         options: {
                             path      : '/store',
