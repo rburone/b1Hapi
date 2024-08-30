@@ -87,6 +87,7 @@ module.exports = [
         dataSource: 'mongodb4',
         actions   : [
             { name: 'search', permissions: [] },
+            { name: 'findID', permissions: [] },
         ]
     },
     { // Activos_count
