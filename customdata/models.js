@@ -4,10 +4,17 @@
 const Joi = require('joi');
 const { string, boolean, array, number, date, any } = Joi.types();
 
-const TIPO_OT     = ['MP', 'MONTAJE', 'NO_PROGRAMADO', 'NOVEDAD', 'EMERGENCIA', 'CAPACITACION', 'EXTERNO']
+// const TIPO_OT     = ['MP', 'MONTAJE', 'NO_PROGRAMADO', 'NOVEDAD', 'EMERGENCIA', 'CAPACITACION', 'EXTERNO']
+const TIPO_OT     = ['MP', 'MONTAJE', 'ANALISIS', 'NO_PROGRAMADO', 'NOVEDAD']
 const STATUS      = ['EAPROB', 'ASIGN', 'APROB', 'ING_MTO', 'EMTRL', 'EPROG', 'PROG_MTO', 'PROG_OP', 'ENPRG', 'RECHAZADA', 'COMP', 'CAN', 'CERR', 'ENVIADA']
 const VAL_MEDIDAS = ['NO DETECTADO', 'PRESENCIA', 'LEVE PRESENCIA']
 const STATUSPLAN  = ['ACTIVO', 'INACTIVO', 'REVISADO']
+
+const dateSchema = Joi.object({
+    dia: number.integer().max(31).min(1),
+    mes: number.integer().max(12).min(1),
+    año: number.integer()
+})
 
 module.exports = [
     { // name
@@ -76,6 +83,16 @@ module.exports = [
         name      : 'Activos',
         dataSource: 'mongodb4',
         actions   : [
+            { name: 'search', permissions: ['USER'] },
+            { name: 'findID', permissions: [] },
+            { name: 'upsert', permissions: ['ADMIN'] },
+            { name: 'create', permissions: ['ADMIN'] },
+        ]
+    },
+    { // usoHorasAct
+        name: 'usoHorasAct',
+        dataSource: 'mongodb4',
+        actions: [
             { name: 'search', permissions: ['USER'] },
             { name: 'findID', permissions: [] },
             { name: 'upsert', permissions: ['ADMIN'] },
@@ -241,8 +258,8 @@ module.exports = [
             { name: 'updateID', permissions: ['USER'] },
         ]
     },
-    { // repo-horas
-        name: 'repo-horas',
+    { // consumoHoras
+        name: 'consumoHoras',
         dataSource: 'mongodb4',
         actions: [
             { name: 'search', permissions: [] },
@@ -281,6 +298,39 @@ module.exports = [
             // sector        : string.required(),
             // gerencia      : string.required(),
         })
+    },
+    { // repo-horas
+        name: 'repo-horas',
+        dataSource: 'mongodb4',
+        actions: [
+            { name: 'search', permissions: [] },
+            { name: 'upsert', permissions: ['USER'] },
+            { name: 'create', permissions: ['USER'] },
+            { name: 'updateID', permissions: ['USER'] },
+        ],
+        schema: Joi.object({
+            _id         : number.integer(),
+            num_ot      : number.integer().required(),                        // eslint-disable-line camelcase
+            fecha       : string.pattern(/\d{2}\/\d{2}\/\d{4}/).required(),
+            fechaObj: Joi.object({
+                dia: number.integer().max(31).min(1),
+                mes: number.integer().max(12).min(1),
+                año: number.integer()
+            }),
+            idrh        : number.integer().required(),
+            hora_inicio : string.pattern(/\d{2}:\d{2}:\d{2}/).required(),     // eslint-disable-line camelcase
+            hora_fin    : string.pattern(/\d{2}:\d{2}:\d{2}/).required(),     // eslint-disable-line camelcase
+            jornada     : number.required(),
+            zona        : string.required(),
+            sector      : string.required(),
+            tipo_ot     : string.valid(...TIPO_OT).required(),                // eslint-disable-line camelcase
+            habil       : string.valid('SI', 'NO').required(),
+            capacitacion: string.allow(''),
+            tipo_cap    : string.allow(''),                                   // eslint-disable-line camelcase
+            ubicacion   : string.pattern(/\w.{4}(\.)?.*/).required(),
+            ubiDesc     : string.required()
+        })
+
     },
     { // Persona
         name: 'Persona',

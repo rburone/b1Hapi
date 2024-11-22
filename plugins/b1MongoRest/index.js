@@ -104,9 +104,9 @@ async function tryGet(db, name, cmd, req, ObjectID, verbose = false) {
         }
 
         if (verbose) {
-            // console.log(`Query: ${JSON.stringify(match)}`)
             // console.log(`${C.BgWhite + C.FgBlack + (new Date()).toTimeString().split(' ')[0] + C.Reset} ${C.FgGreen + cmd + C.Reset} in ${C.FgGreen + name + C.Reset}: ${response.data.length} registers returned.`)
             console.log(`${(new Date()).toTimeString().split(' ')[0].BgWhite.FgBlack} ${cmd.FgGreen} in ${name.FgGreen}: ${response.data.length} registers returned.`)
+            console.log(`Query: ${JSON.stringify(match)}`)
         }
 
         return response
@@ -143,9 +143,9 @@ async function tryDrop(db, name, verbose = false) {
         const result = await db.collection(name)[cmd]()
 
         if (verbose) {
-            // console.log(`Query: ${JSON.stringify(match)}`)
             // console.log(`${C.BgWhite + C.FgBlack + (new Date()).toTimeString().split(' ')[0] + C.Reset} ${C.FgGreen + cmd + C.Reset} in ${C.FgGreen + name + C.Reset}: ${response.data.length} registers returned.`)
             console.log(`${(new Date()).toTimeString().split(' ')[0].BgWhite.FgBlack} ${cmd.FgGreen} in ${name.FgGreen}: ${response}.`)
+            // console.log(`Query: ${JSON.stringify(match)}`)
         }
 
         return result
@@ -209,6 +209,7 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
                                 const valid = validate(payload[i], schema)
                                 // if (valid) cleanPayload.push(payload[i])
                                 if (valid) cleanPayload.push(valid)
+                                else throw Boom.badData('Payload validation error')
                             }
 
                             if (cleanPayload.length == 0) throw Boom.badData('Empty payload after validation');
@@ -246,7 +247,7 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
 
                             try {
                                 const result = await db.collection(name).bulkWrite(bulkOperations)
-                                if (verbose) console.log(`Result: Ins: ${result.nInserted}  Ups: ${result.nUpserted}  Mod: ${result.nModified}  of ${bulkOperations.length}`);
+                                if (verbose) console.log(`Result: Ins: ${result.insertedCount}  Ups: ${result.upsertedCount}  Mod: ${result.modifiedCount}  of ${bulkOperations.length}`);
                                 return result
                             } catch (error) {
                                 console.log(error.constructor.name, error.message); // TODO: Mostrar mejor
