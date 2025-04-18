@@ -1,0 +1,20 @@
+# Configuration file to read
+CONFIG_FILE = config-development
+
+# Database credentials
+DB_USER_mongodb4  = b1hapi
+DB_PASS_mongodb4  = hapipass
+AUTH_SRC_mongodb4 = maxclon
+
+DB_USER_mongoDev = GestionAPP
+DB_PASS_mongoDev = gestionapp
+
+# Mailer credentials
+MAIL_USER = nouser
+MAIL_PASS = nopass
+
+# Mercado Pago credentials
+MP_PROD_ACCESSTOKEN = *
+MP_PROD_PUBLICKEY   = *
+MP_TEST_ACCESSTOKEN = TEST-8265916827991071-042621-0120870cd60843bfa630fd543b879b83-192191266
+MP_TEST_PUBLICKEY   = TEST-6a8b5496-846d-41fd-899d-e7ff08b6e047
