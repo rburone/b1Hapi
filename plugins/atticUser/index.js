@@ -1,10 +1,12 @@
 'use strict'
 const usrMng       = require('./lib')
 const Joi          = require('joi')
-const bcrypt       = require('bcryptjs');
-const { generate } = require('../../lib/methods').b1Lib
+// const bcrypt       = require('bcryptjs');
+// const { generate } = require('../../lib/methods').b1Lib
 
-const { string, array } = Joi.types();
+const responsableSchema = async () => await import('../../customdata/schemas/schema-responsable.mjs')
+
+const { string, array, object } = Joi.types();
 
 function getDbCollection(rq, connection = '', collection = '') {
     const idx = rq.server.methods.getConf('dbList')
@@ -22,13 +24,20 @@ async function trySendMail(sender, content) {
     try {
         return await sender(content)
     } catch (error) {
-        return error
+        console.log(error)
+        return { error }
     }
 }
 
+const errorMap = {
+    'insert_token': ['Error grave. No se pudo registrar la clave token.',''],
+    11000         : ['Registro duplicado.', 'conflict']
+}
+
 module.exports = {
-    name: 'userManagment',
+    name: 'atticUser',
     register(server, settings) {
+        const resolver = new server.errorParser(errorMap)
         const routes = [
             { // LOGIN user
                 method : 'POST',
@@ -37,7 +46,7 @@ module.exports = {
                     auth    : false,
                     validate: {
                         payload: Joi.object({
-                            email   : string.email().required(),
+                            email   : string.email({ tlds: { allow: false } }).required(),
                             password: string.min(settings.passMinLen).required(),
                         })
                     }
@@ -56,7 +65,7 @@ module.exports = {
                         delete result.code  // Delete validation code from response
                         return result
                     } else {
-                        return server.errManager({error: result.error, from: `[plugin:userManagment:login]`})
+                        return server.errManager({error: result.error, from: `[plugin:atticUser:login]`})
                     }
                 }
             },
@@ -75,7 +84,7 @@ module.exports = {
                     if (!result.error) {
                         return result
                     } else {
-                        return server.errManager({error: result.error, from: `[plugin:userManagment:logout]`})
+                        return server.errManager({error: result.error, from: `[plugin:atticUser:logout]`})
                     }
                 }
             },
@@ -118,13 +127,13 @@ module.exports = {
 
                                 return status
                             } catch (error) {
-                                return server.errManager({error, from: `[plugin:userManagment:emailRender]`})
+                                return server.errManager({error, from: `[plugin:atticUser:emailRender]`})
                             }
                         } else {
                             return code
                         }
                     } else {
-                        return server.errManager({error: code.error, from: `[plugin:userManagment:setVerificationCode]`})
+                        return server.errManager({error: code.error, from: `[plugin:atticUser:setVerificationCode]`})
 
                     }
                 }
@@ -151,13 +160,13 @@ module.exports = {
                             if (!updResult.error) {
                                 return updResult
                             } else {
-                                return server.errManager({error: updResult.error, from: `[plugin:userManagment:updatePassword]`})
+                                return server.errManager({error: updResult.error, from: `[plugin:atticUser:updatePassword]`})
                             }
                         } else {
                             return 'unchanged'
                         }
                     } else {
-                        return server.errManager({error: result.error, from: `[plugin:userManagment:setPassword]`})
+                        return server.errManager({error: result.error, from: `[plugin:atticUser:setPassword]`})
                     }
                 }
             },
@@ -184,13 +193,13 @@ module.exports = {
                             if (!updResult.error) {
                                 return updResult
                             } else {
-                                return server.errManager({error: updResult.error, from: `[plugin:userManagment:updatePassword]`})
+                                return server.errManager({error: updResult.error, from: `[plugin:atticUser:updatePassword]`})
                             }
                         } else {
                             return 'unchanged'
                         }
                     } else {
-                        return server.errManager({error: result.error, from: `[plugin:userManagment:checkPassword]`})
+                        return server.errManager({error: result.error, from: `[plugin:atticUser:checkPassword]`})
                     }
                 }
             },
@@ -213,7 +222,7 @@ module.exports = {
                     if (!result.error) {
                         return (result == 'ok') ? 'ok': 'invalid'
                     } else {
-                        return server.errManager({error: result.error, from: `[plugin:userManagment:chkCode]`})
+                        return server.errManager({error: result.error, from: `[plugin:atticUser:chkCode]`})
                     }
                 }
             },
@@ -233,26 +242,28 @@ module.exports = {
                     }
                 },
                 handler: async (req) => {
+                    console.log('DELETE')
                     const modelUser = getDbCollection(req, settings.connection, settings.modelUser)
+                    const modelData = getDbCollection(req, settings.connection, 'Responsable')
                     const email     = req.params.email
-                    const result    = await usrMng.delete(modelUser, email)
+                    const result    = await usrMng.delete(modelUser, modelData, email)
 
                     if (!result.error) {
                         return result
                     } else {
-                        return server.errManager({error: result.error, from: `[plugin:userManagment:delete]`})
+                        return server.errManager({error: result.error, from: `[plugin:atticUser:delete:${email}]`})
                     }
                 }
             },
             { // Create a new user
                 method : 'POST',
-                path   : '',
+                path   : '/responsable',
                 options: {
                     validate: {
                         payload: Joi.object({
+                            email   : string.email({ tlds: { allow: false } }).required(),
                             password: string.min(settings.passMinLen).required().allow('*'),
-                            email   : string.email().required(),
-                            roles   : array.items(string.valid(...settings.roles)).required()
+                            data    : object.required() //TODO Validar schema responsable
                         })
                     },
                     plugins: {
@@ -262,54 +273,40 @@ module.exports = {
                     }
                 },
                 handler: async (req) => {
-                    const modelUser                  = getDbCollection(req, settings.connection, settings.modelUser)
-                    const { email, password, roles } = req.payload
-                    const cryptPass = password != '*' ? bcrypt.hashSync(password, 10) : '*'
-
-                    const user = {
-                        _id           : email,
-                        password      : cryptPass,
-                        roles         : roles,
-                        validationCode: generate(settings.lenVerifCode),
-                        emailVerified : !settings.verifyEmail,
-                    }
-
-                    const result = await usrMng.create(modelUser, user)
+                    const modelUser = getDbCollection(req, settings.connection, settings.modelUser)  // 💭 ↪ Objecto mongo.collection
+                    const modelData = getDbCollection(req, settings.connection, 'Responsable')
+                    const user      = req.payload
+                    const result    = await usrMng.create(modelUser, modelData, user, settings)
 
                     if (!result.error) {
                         let sentMail = false
                         if (settings.verifyEmail && settings.sendMails) {
+
                             const mail = await server.render(settings.emailVerificationCode, {
                                 code: user.validationCode,
-                                url: `http://${settings.proxyURL}/${settings.path}/changePassCodeForm/${user._id}`
+                                url: `http://${settings.proxyURL}/${settings.path}/changePassCodeForm/${user.email}`
                             });
 
                             const info = await trySendMail(server.methods.sendEmail, {
                                 from   : settings.fromEmail,
-                                to     : user._id,
+                                to     : user.email,
                                 subject: settings.subjectRegister || 'Register OK',
                                 html   : mail
                             })
 
-                            // const info = await server.methods.sendEmail({
-                            //     from   : settings.fromEmail,
-                            //     to     : user._id,
-                            //     subject: settings.subjectRegister || 'Register OK',
-                            //     html   : mail
-                            // })
-
-                            if (info == 'ok') {
-                                sentMail = true
-                            } else {
+                            if (info.error) {
                                 console.log(`ERROR: EMAIL CAN'T SENT TO ${email}`)
                                 sentMail = false
+                            } else {
+                                sentMail = true
                             }
-                        }
 
+                        }
                         return {validationCode: user.validationCode, sentMail}
                     } else {
-                        return server.errManager({error: result.error, from: `[plugin:userManagment:create:${email}]`})
+                        return resolver.parse(result.error, `[plugin:atticUser:create:${user.email}]`)
                     }
+
                 }
             },
             { // Return validation code form
@@ -328,11 +325,11 @@ module.exports = {
                         const form = await server.render(settings.formChkVerificationCode, {
                             lengthcode: settings.lenVerifCode,
                             url       : `${settings.path}/chkCode`,
-                            email     : req.params.email
+                            email     : '' // req.params.email //<|
                         });
                         return form
                     } catch (error) {
-                        return server.errManager({error, from: `[plugin:userManagment:validationForm]`})
+                        return server.errManager({error, from: `[plugin:atticUser:validationForm]`})
                     }
                 }
             },
@@ -358,7 +355,7 @@ module.exports = {
 
                         return form
                     } catch (error) {
-                        return server.errManager({ error, from: `[plugin:userManagment:changePassCodeForm]` })
+                        return server.errManager({ error, from: `[plugin:atticUser:changePassCodeForm]` })
                     }
                 }
             },
@@ -376,7 +373,7 @@ module.exports = {
                         });
                         return form
                     } catch (error) {
-                        return server.errManager({error, from: `[plugin:userManagment:changePassForm]`})
+                        return server.errManager({error, from: `[plugin:atticUser:changePassForm]`})
                     }
                 }
             },
@@ -413,7 +410,7 @@ module.exports = {
                             return 'unchanged'
                         }
                     } else {
-                        return server.errManager({error: result.error, from: `[plugin:userManagment:update]`})
+                        return server.errManager({error: result.error, from: `[plugin:atticUser:update]`})
                     }
                 }
             },

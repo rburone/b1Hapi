@@ -28,6 +28,12 @@ module.exports = {
                             doLog: true
                         }
                     },
+                    {// 🚨 REQUIRED FOR ORTHER PLUGINS must to be first
+                        plugin : require('./plugins/b1ManagmentError'),
+                        options: {
+                            doLog: true
+                        }
+                    },
                     {// 🚨 REQUIRED FOR ORTHER PLUGINS must to be second
                         plugin : require('./plugins/b1routerRegister'),
                         options: {
@@ -48,14 +54,14 @@ module.exports = {
                     { // REST
                         plugin : require('./plugins/b1MongoRest'),
                         options: {
-                            api    : require(config.dataSource.defFile),
+                            api    : require(config.dataSource.defFile), // Def ROUTES & MODELS
                             path   : config.dataSource.path,
                             verbose: config.server.verbose,
                             dbList : config.dbList
                         }
                     },
                     { // User Mangment
-                        plugin : require('./plugins/userManagment'),
+                        plugin : require('./plugins/atticUser'),
                         options: {
                             modelUser              : config.security.modelUser,
                             modelToken             : config.security.modelToken,

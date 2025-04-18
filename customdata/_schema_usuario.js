@@ -30,4 +30,4 @@ const a = execJoi(schema)
 console.log(a.validate({}))
 // console.log(jschema.validate({}))
 
-const t = 'string,emai,required'
+// const t = 'string,emai,required'

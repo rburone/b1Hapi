@@ -1,7 +1,9 @@
 'use strict'
-const Boom         = require('@hapi/boom')
-const Joi          = require('joi')
-const log          = require('../../lib/console_helper')
+const Boom   = require('@hapi/boom')
+const Joi    = require('joi')
+const log    = require('../../lib/console_helper')
+const { it } = require('../../lib/b1Utils')
+
 const { validate, tryAttemp } = require('../../lib/methods').b1Lib
 
 require('../../lib/b1-colorString')
@@ -291,8 +293,8 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
 module.exports = {
     name: 'b1MongoRest',
     register(server, options) {
+        // process.exit()
         server.assert(Joi.assert, options, OptionsSchema, '[plugin:b1MongoRest:options]')
-
         const modelDef  = options.api.model
         const routesDef = options.api.routes
         const apiPATH   = options.path || ''

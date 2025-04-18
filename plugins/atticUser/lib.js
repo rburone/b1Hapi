@@ -3,6 +3,7 @@
 const crypto       = require('crypto');
 const bcrypt       = require('bcryptjs');
 const { generate } = require('../../lib/methods').b1Lib
+// const UserManagmentError = require('./errorMangment')
 
 require('../../lib/b1-colorString')
 
@@ -18,8 +19,8 @@ async function saveToken(collection, userId, ttl) {
         await collection.insertOne(accessToken)
         return accessToken
     } catch (error) {
-        return new UserManagmentError('insert_token', '[lib:userMangment:saveToken]', error)
-        // return {error, from: '[lib:userMangment:saveToken]'}
+        console.log('ERROR')
+        return {error, from: '[lib:atticUser:saveToken]'}
     }
 }
 
@@ -57,10 +58,10 @@ module.exports = {
                     return { error: 404 }
                 }
             } catch (error) {
-                return { error, from: '[lib:userMangment:checkUser]' }
+                return { error, from: '[lib:atticUser:checkUser]' }
             }
         } else {
-            return { error: `Non exists ${collection}`, from: '[plugin:userManagment:getDbCollection]' }
+            return { error: `Non exists ${collection}`, from: '[plugin:atticUser:getDbCollection]' }
         }
     },
 
@@ -84,7 +85,7 @@ module.exports = {
                 return {error: 404}
             }
         } catch (error) {
-            return {error, from: '[lib:userMangment:checkUser]'}
+            return {error, from: '[lib:atticUser:checkUser]'}
         }
     },
 
@@ -103,7 +104,7 @@ module.exports = {
                 return 'unchanged'
             }
         } catch (error) {
-            return {error, from: '[lib:userMangment:revokeToken]'}
+            return {error, from: '[lib:atticUser:revokeToken]'}
         }
     },
 
@@ -128,7 +129,7 @@ module.exports = {
                 return {error: 404}
             }
         } catch (error) {
-            return {error, from: '[lib:userMangment:setVerificationCode]'}
+            return {error, from: '[lib:atticUser:setVerificationCode]'}
         }
     },
 
@@ -149,14 +150,14 @@ module.exports = {
             }
 
             const result = await userCollection.updateOne({_id, validationCode}, {$set})
-            console.log(`${(new Date()).toTimeString().split(' ')[0].BgWhite.FgBlack} [lib:userMangment:chkVerificationCode]`, validationCode, result.modifiedCount == 1 ? 'OK'.FgGreen:'NO'.FgRed)
+            console.log(`${(new Date()).toTimeString().split(' ')[0].BgWhite.FgBlack} [lib:atticUser:chkVerificationCode]`, validationCode, result.modifiedCount == 1 ? 'OK'.FgGreen:'NO'.FgRed)
             if (result.modifiedCount == 1) {
                 return 'ok'
             } else {
                 return 'unchanged'
             }
         } catch (error) {
-            return {error, from: '[lib:userMangment:chkVerificationCode]'}
+            return {error, from: '[lib:atticUser:chkVerificationCode]'}
         }
     },
 
@@ -174,14 +175,14 @@ module.exports = {
             }
 
             const result = await userCollection.updateOne({_id, emailVerified: true}, {$set})
-            console.log(`${(new Date()).toTimeString().split(' ')[0].BgWhite.FgBlack} [lib:userMangment:updatePass]`, _id, result.modifiedCount == 1 ? 'YES'.FgGreen : 'NO'.FgRed)
+            console.log(`${(new Date()).toTimeString().split(' ')[0].BgWhite.FgBlack} [lib:atticUser:updatePass]`, _id, result.modifiedCount == 1 ? 'YES'.FgGreen : 'NO'.FgRed)
             if (result.modifiedCount == 1) {
                 return 'ok'
             } else {
                 return 'unchanged'
             }
         } catch (error) {
-            return {error, from: '[lib:userMangment:updatePass]'}
+            return {error, from: '[lib:atticUser:updatePass]'}
         }
     },
 
@@ -191,15 +192,25 @@ module.exports = {
      * @param {object} user
      * @returns object if ok or error object if not
      */
-    async create(userCollection, user) {
-        try {
-            const result = await userCollection.insertOne(user)
-            console.log(`${(new Date()).toTimeString().split(' ')[0].BgWhite.FgBlack} [lib:userMangment:create]`, user._id, result.insertedId ? 'YES'.Bright.FgGreen : 'NO'.Bright.FgRed)
-            return result
-        } catch (error) {
-            return {error, from: `[lib:userMangment:create:${user._id}]`}
+    async create(userCollection, usrDataCollection, user, settings) {
+        const loginUsr = {
+            _id           : user.email,
+            password      : user.password != '*' ? bcrypt.hashSync(user.password, 10) : '*',
+            roles         : ['Responsable'],
+            validationCode: generate(settings.lenVerifCode),
+            emailVerified : !settings.verifyEmail,
         }
 
+        user.data._id = user.email
+
+        try {
+            const dataRst = await usrDataCollection.insertOne(user.data)
+            let result = await userCollection.insertOne(loginUsr)
+            console.log(`${(new Date()).toTimeString().split(' ')[0].BgWhite.FgBlack} [lib:atticUser:create]`, loginUsr._id, result.insertedId ? 'YES'.Bright.FgGreen : 'NO'.Bright.FgRed)
+            return result
+        } catch (error) {
+            return { error }
+        }
     },
 
     /**
@@ -208,17 +219,18 @@ module.exports = {
      * @param {string} _id
      * @returns string 'ok' if deleted or 'unchanged' if not
      */
-    async delete(userCollection, _id) {
+    async delete(userCollection, usrDataCollection, _id) {
         try {
             const result = await userCollection.deleteOne({ _id })
-            console.log(`${(new Date()).toTimeString().split(' ')[0].BgWhite.FgBlack} [lib:userMangment:delete]`, _id, result.deletedCount ? 'YES'.Bright.FgGreen : 'NO'.Bright.FgRed)
-            if (result.deletedCount == 1) {
+            const dataRst = await usrDataCollection.deleteOne({ _id })
+            console.log(`${(new Date()).toTimeString().split(' ')[0].BgWhite.FgBlack} [lib:atticUser:delete]`, _id, result.deletedCount ? 'YES'.Bright.FgGreen : 'NO'.Bright.FgRed)
+            if (result.deletedCount == 1 && dataRst.deletedCount == 1) {
                 return 'ok'
             } else {
                 return 'unchanged'
             }
         } catch (error) {
-            return {error, from: `[lib:userMangment:delete:${_id}]`}
+            return { error }
         }
 
     },
@@ -237,17 +249,16 @@ module.exports = {
             }
 
             const result = await userCollection.updateOne({_id}, {$set})
-            console.log(`${(new Date()).toTimeString().split(' ')[0].BgWhite.FgBlack} [lib:userMangment:update]`, userData._id, result.modifiedCount ? 'YES'.Bright.FgGreen : 'NO'.Bright.FgRed)
+            console.log(`${(new Date()).toTimeString().split(' ')[0].BgWhite.FgBlack} [lib:atticUser:update]`, userData._id, result.modifiedCount ? 'YES'.Bright.FgGreen : 'NO'.Bright.FgRed)
             if (result.modifiedCount == 1) {
                 return 'ok'
             } else {
                 return 'unchanged'
             }
         } catch (error) {
-            return {error, from: '[lib:userMangment:update]'}
+            return {error, from: '[lib:atticUser:update]'}
         }
     },
-
     async find(userCollection) {
         try {
             const result = await userCollection.find().toArray()
@@ -257,10 +268,9 @@ module.exports = {
             })
             return out
         } catch (error) {
-            return { error, from: `[lib:userMangment:find]` }
+            return { error, from: `[lib:atticUser:find]` }
         }
     },
-
     async rolList(userCollection) {
         try {
             const result = await userCollection.find().toArray()
@@ -270,7 +280,7 @@ module.exports = {
             })
             return out
         } catch (error) {
-            return { error, from: `[lib:userMangment:find]` }
+            return { error, from: `[lib:atticUser:find]` }
         }
     }
 }
