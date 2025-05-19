@@ -242,9 +242,8 @@ module.exports = {
                     }
                 },
                 handler: async (req) => {
-                    console.log('DELETE')
                     const modelUser = getDbCollection(req, settings.connection, settings.modelUser)
-                    const modelData = getDbCollection(req, settings.connection, 'Responsable')
+                    const modelData = getDbCollection(req, settings.connection, 'Responsable') // TODO Hacer generico
                     const email     = req.params.email
                     const result    = await usrMng.delete(modelUser, modelData, email)
 
@@ -304,7 +303,7 @@ module.exports = {
                         }
                         return {validationCode: user.validationCode, sentMail}
                     } else {
-                        return resolver.parse(result.error, `[plugin:atticUser:create:${user.email}]`)
+                        return resolver.parse(result.error, `[plugin:atticUser:create:responsable:${user.email}]`)
                     }
 
                 }
@@ -325,7 +324,7 @@ module.exports = {
                         const form = await server.render(settings.formChkVerificationCode, {
                             lengthcode: settings.lenVerifCode,
                             url       : `${settings.path}/chkCode`,
-                            email     : '' // req.params.email //<|
+                            email     : req.params.email
                         });
                         return form
                     } catch (error) {

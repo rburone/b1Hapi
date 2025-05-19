@@ -2,9 +2,9 @@
 const Boom   = require('@hapi/boom')
 const Joi    = require('joi')
 const log    = require('../../lib/console_helper')
-const { it } = require('../../lib/b1Utils')
+// const { it } = require('../../lib/b1Utils')
 
-const { validate, tryAttemp } = require('../../lib/methods').b1Lib
+const { validate/*, tryAttemp*/ } = require('../../lib/methods').b1Lib
 
 require('../../lib/b1-colorString')
 
@@ -35,7 +35,8 @@ const ModelSchema = Joi.object({
 const OptionsSchema = Joi.object({
     api: {
         routes: array.items(RouteSchema).required(),
-        model : array.items(ModelSchema).required()
+        // model : array.items(ModelSchema).required()
+        model: Joi.any()
     },
     path   : string.allow('').required(),
     verbose: boolean,
@@ -199,7 +200,6 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
             } else {
                 return await tryDelete(db, name, cmd, req, ObjectID, verbose)
             }
-
         } else {
             let payload = req.payload || null
             if (payload) {
@@ -211,9 +211,11 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
                                 const valid = validate(payload[i], schema)
                                 // if (valid) cleanPayload.push(payload[i])
                                 if (valid) cleanPayload.push(valid)
-                                else throw Boom.badData('Payload validation error')
+                                else {
+                                    console.log(`In register ${i}: ${payload[i]}`)
+                                    throw Boom.badData('[BULK OPERATION] Payload validation error')
+                                }
                             }
-
                             if (cleanPayload.length == 0) throw Boom.badData('Empty payload after validation');
                         } else cleanPayload = payload
 
