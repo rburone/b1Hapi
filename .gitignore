@@ -12,3 +12,4 @@ node_modules
 .history
 public/avatares
 .env enersa
+config-development-enersa.js

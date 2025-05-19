@@ -54,14 +54,16 @@ module.exports = {
                     { // REST
                         plugin : require('./plugins/b1MongoRest'),
                         options: {
-                            api    : require(config.dataSource.defFile), // Def ROUTES & MODELS
+                            models : require(config.dataSource.modelsDef),   // Def MODELS
+                            api    : require(config.dataSource.defFile),     // Def ROUTES
                             path   : config.dataSource.path,
                             verbose: config.server.verbose,
                             dbList : config.dbList
                         }
                     },
-                    { // User Mangment
-                        plugin : require('./plugins/atticUser'),
+                    { // User Managment
+                        // plugin: require('./plugins/atticUser'),
+                        plugin: require('./plugins/userManagment'),
                         options: {
                             modelUser              : config.security.modelUser,
                             modelToken             : config.security.modelToken,

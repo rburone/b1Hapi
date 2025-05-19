@@ -1,5 +1,3 @@
-const model = require('../../customdata/models_attic')
-
 const API = {
     routes: [
         // Find all instances of the model matched by filter from the data source.
@@ -26,8 +24,7 @@ const API = {
         { 'name': 'delete', 'cmd': 'deleteMany', 'method': 'DELETE', 'path': '/:model' },
         // Drop data source.
         { 'name': 'clear', 'cmd': 'drop', 'method': 'DELETE', 'path': '/:model/clear' },
-    ],
-    model
+    ]
 }
 
 module.exports = API

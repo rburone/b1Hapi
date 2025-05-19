@@ -29,15 +29,17 @@ const ModelSchema = Joi.object({
     name      : string.required(),
     dataSource: string.required(),
     actions   : array.items(ACLSchema).required(),
-    schema    : Joi.object()
+    schema: [
+        string.required(),
+        Joi.object()
+    ]
 })
 
 const OptionsSchema = Joi.object({
     api: {
         routes: array.items(RouteSchema).required(),
-        // model : array.items(ModelSchema).required()
-        model: Joi.any()
     },
+    models : array.items(ModelSchema).required(),
     path   : string.allow('').required(),
     verbose: boolean,
     dbList : Joi.object()
@@ -297,7 +299,7 @@ module.exports = {
     register(server, options) {
         // process.exit()
         server.assert(Joi.assert, options, OptionsSchema, '[plugin:b1MongoRest:options]')
-        const modelDef  = options.api.model
+        const modelDef  = options.models
         const routesDef = options.api.routes
         const apiPATH   = options.path || ''
         const verbose   = options.verbose || false
