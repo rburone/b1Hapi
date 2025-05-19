@@ -40,9 +40,15 @@ const EmailSchema = Joi.object({
     html   : string
 })
 
+const errorMap = {
+    'ESOCKET'  : ['No se pudo conectar al mail server.','unavailable'],
+    Unavailable: ['No se pudo conectar al mail server.','unavailable'],
+}
+
 module.exports = {
     name: 'b1nodemailer',
     async register(server, options) {
+        const resolver = new server.errorParser(errorMap)
         // server.assert(Joi.assert, options, OptionsSchema, '[plugin:b1nodemailer:options]') // HACK: [10/07/2024] Se quito validación opciones momentaneamente
 
         const transporter = nodemailer.createTransport(options);
@@ -59,22 +65,27 @@ module.exports = {
         server.method({
             name: 'sendEmail',
             method: async function(emailOptions) {
+                // transporter.OK = true
                 if (transporter.OK) {
                     const {error, value} = EmailSchema.validate(emailOptions)
                     if (!error) {
-                        const info = await transporter.sendMail(emailOptions)
-                        if (info.accepted.length > 0) {
-                            return 'ok'
-                        } else {
-                            const error = new Error('Not sent')
-                            return server.errManager({error, from: '[plugin:b1nodemailer:sendMail]'})
+                        try {
+                            const info = await transporter.sendMail(emailOptions)
+                            if (info.accepted.length > 0) {
+                                return 'ok'
+                            } else {
+                                return resolver.parse(Error('Notsent'), `[plugin:b1nodemailer:sendMail]`)
+                            }
+                        } catch (error) {
+                            return resolver.parse(error, '[plugin:b1nodemailer:sendMail:connection]')
                         }
+
+
                     } else {
-                        return server.errManager({error, from: '[plugin:b1nodemailer:validation]'})
+                        return resolver.joi(error, `[plugin:b1nodemailer:sendMail:validation]`)
                     }
                 } else {
-                    const error = new Error('Unavailable')
-                    return server.errManager({error, from: '[plugin:b1nodemailer:unavailable]'})
+                    resolver.parse(Error('Unavailable'), '[plugin:b1nodemailer:sendMail:unavailable]' )
                 }
             }
         });

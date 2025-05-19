@@ -50,7 +50,9 @@ function genericError(code, message, from) {
 }
 
 function manager({error, from}) {
+    console.log(error, from)
     const name = error?.constructor.name || 'Undefined'
+    console.log('->', name)
     switch (name) {
         case 'Number':
             return genericError(error)
@@ -73,6 +75,7 @@ function manager({error, from}) {
             console.table(error._original)
             return Boom.internal()
         default:
+            console.log('no type')
             say('error', name, error?.message, from)
             return Boom.internal()
     }

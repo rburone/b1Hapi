@@ -1,4 +1,4 @@
-const model = require('../../customdata/models')
+const model = require('../../customdata/models_attic')
 
 const API = {
     routes: [

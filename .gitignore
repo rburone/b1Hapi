@@ -11,3 +11,4 @@ node_modules
 .vscode
 .history
 public/avatares
+.env enersa

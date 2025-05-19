@@ -11,7 +11,7 @@ module.exports = {
         customData: `${__dirname}/customdata`,   // TODO MOVER [R] System path for custom and plugins data
         proxyURL  : 'localhost:9000/hapi',       // [R] URL masked by proxy
         // --------------------------------------------[ OPTIONAL ]
-        // host      : 'localhost',           // [D] Server URL
+        // host      : 'localhost',           // [D: localhost] Server URL
     },
     messages: {
         subjectRegister: 'Register OK'        // [R] Subject for notify user registration
@@ -27,20 +27,19 @@ module.exports = {
         modelToken : 'AccessToken',   // [R] Model with tokens data
         modelUser  : 'User',          // [R] Model with users data
         pathAPI    : 'User',          // [R] REST api path for user managment
-        connection : 'mongodb4',      // [R] Conection name
-        verifyEmail: true,            // [D] Is verification of email required?
+        connection : 'mongodb8',      // [R] Conection name
+        verifyEmail: true,            // [D: false] Is verification of email required?
         // --------------------------------------------[ OPTIONAL ]
-        // verifyEmail : false,           // [D] Is verification of email required?
-        // ttl         : 1209600,         // [D] Token duration
-        // passMinLen  : 8,               // [D] Minimun length for user password
-        // lenVerifCode: 6,               // [D] Length of verification code for new user
-        // oneTimeCode : true,            // [D] Whether to reset the verification code after a true validation?
-        // secureChange: false,           // [D] Need to be logged for user can changes password?
+        // ttl         : 1209600,         // [D: 1209600] Token duration
+        // passMinLen  : 8,               // [D: 8] Minimun length for user password
+        // lenVerifCode: 6,               // [D: 6] Length of verification code for new user
+        // oneTimeCode : true,            // [D: true] Whether to reset the verification code after a true validation?
+        // secureChange: false,           // [D: false] Need to be logged for user can changes password?
     },
     acl: {
         // --------------------------------------------[ OPTIONAL ]
-        // roles: ['SUPER_ADMIN', 'ADMIN', 'USER', 'GUEST'],   // [D] Roles for ACL
-        // userAdmin: 'ADMIN',                                 // [D] Role for user managment
+        roles    : ['SYSADMIN', 'ADMIN', 'PROGRAMADOR', 'RESPONSABLE', 'CLIENTE'], // [D] Roles for ACL
+        userAdmin: 'SYSADMIN'                                                      // [D: ADMIN] Role for user managment
     },
     mail: {
         service  : 'FakeSMTP',
@@ -63,8 +62,8 @@ module.exports = {
         path      : '/db',
         connections: [
             {
-                name: 'mongodb4',                             // [R] Conection name
-                uri : 'mongodb://128.0.5.58:27044/maxclon',   // [R] URL MongoDB collection
+                name: 'mongodb8',                             // [R] Conection name
+                uri : 'mongodb://127.0.0.1:27017/atticLab',   // [R] URL MongoDB collection
             },
             // {
             //     name: 'mongoStage',                                  // [R] Conection name

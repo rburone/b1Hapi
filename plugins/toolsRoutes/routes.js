@@ -17,13 +17,16 @@ module.exports = [
         path: '',
         options: {
             auth: false,
-            // payload: {
-            //     allow: 'application/json',
-            //     parse: true
+            // validate: {
+            //     payload: Joi.object({
+            //         // email   : string.email({ tlds: { allow: false } }).required()
+            //         nombre: string.required()
+            //         // data    : responsableSchema
+            //     })
             // },
         },
         handler: function (req) {
-            console.log(req.payload.data);
+            console.log(req.payload);
             return 'Bur1 Hapi\'s Server Test';
         }
     },
@@ -39,18 +42,32 @@ module.exports = [
     },
     {
         method : 'GET',
+        path   : '/acl/roles',
+        options: {
+            auth: false
+        },
+        handler: (req) => {
+            const config = req.server.methods.getConf()
+            return { 'roles': config.acl.roles }
+        }
+    },
+    {
+        method : 'GET',
         path   : '/config',
         options: {
             auth: false
         },
         handler: (req) => {
-            console.log('\n█▀▀ █▀█ █▄░█ █▀▀ █ █▀▀ █░█ █▀█ ▄▀█ ▀█▀ █ █▀█ █▄░█\n█▄▄ █▄█ █░▀█ █▀░ █ █▄█ █▄█ █▀▄ █▀█ ░█░ █ █▄█ █░▀█')
-            const config = req.server.methods.getConf()
-            Object.keys(config).forEach((key) => {
-                console.log('\n │ %s │', key)
-                console.table(config[key])
-            })
-            console.log('\n-------------------------------------------------------------------------------------\n')
+            let config = 'ERROR'
+            if (process.env.NODE_ENV == 'development') {
+                console.log('\n█▀▀ █▀█ █▄░█ █▀▀ █ █▀▀ █░█ █▀█ ▄▀█ ▀█▀ █ █▀█ █▄░█\n█▄▄ █▄█ █░▀█ █▀░ █ █▄█ █▄█ █▀▄ █▀█ ░█░ █ █▄█ █░▀█')
+                config = req.server.methods.getConf()
+                Object.keys(config).forEach((key) => {
+                    console.log('\n │ %s │', key)
+                    console.table(config[key])
+                })
+                console.log('\n-------------------------------------------------------------------------------------\n')
+            }
             return config
         }
     },
@@ -105,7 +122,7 @@ module.exports = [
 
             const code      = generate(6)
             const superUser = {
-                _id           : 'super_admin',
+                _id           : 'super@bur1.com',
                 password      : '*',
                 emailVerified : true,
                 roles         : config.acl.roles,
