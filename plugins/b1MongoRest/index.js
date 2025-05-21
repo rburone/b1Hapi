@@ -179,8 +179,10 @@ function createRoute(modelData, permissions, definition, apiPATH, verbose, dbLis
             }
         }
     } else {
-        routerDef.options = {
-            auth: false
+        if (undefined == permissions[0]) {
+            routerDef.options = {
+                auth: false
+            }
         }
     }
 

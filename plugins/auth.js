@@ -59,7 +59,6 @@ module.exports = {
     name: 'auth',
     async register(server, options) {
         server.assert(Joi.assert, options, OptionsSchema, '[plugin:auth:options]')
-
         await server.register(AuthBearer)
         server.auth.strategy('simple', 'bearer-access-token', {
             allowQueryToken: true,

@@ -13,3 +13,4 @@ node_modules
 public/avatares
 .env enersa
 config-development-enersa.js
+customdata/models_enersa.js
